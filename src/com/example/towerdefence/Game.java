@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -18,6 +20,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -41,6 +44,8 @@ public class Game extends Activity implements Runnable {
 	private TouchEventPool touchEventPool = new TouchEventPool();
 	private ArrayList<TouchEvent> touchEvents = new ArrayList<TouchEvent>();
 	private ArrayList<TouchEvent> touchEventBuffer = new ArrayList<TouchEvent>();
+	private SoundPool soundPool;
+	private int fps = 0;
 
 	@SuppressWarnings("deprecation")
 	public void onCreate(Bundle savedInstanceState) {
@@ -55,9 +60,11 @@ public class Game extends Activity implements Runnable {
 		screen = createStartScreen();
 		setOffscreenSurfaceOrientation();
 		if (Integer.parseInt(VERSION.SDK)< 5)
-			touchHandler = new SingleTouchHandler(surfaceView);
+			touchHandler = new SingleTouchHandler(surfaceView, touchEventBuffer, touchEventPool);
 		else
-			touchHandler = new MultiTouchHandler(surfaceView);
+			touchHandler = new MultiTouchHandler(surfaceView, touchEventBuffer, touchEventPool);
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		this.soundPool = new SoundPool(20, AudioManager.STREAM_MUSIC, 0);
 	}
 	
 	public Screen createStartScreen() {
@@ -77,6 +84,7 @@ public class Game extends Activity implements Runnable {
 		synchronized (stateChanges) {
 			if (isFinishing()) {
 				stateChanges.add(stateChanges.size(), State.Disposed);
+				soundPool.release();
 			} 
 			else {
 				stateChanges.add(stateChanges.size(), State.Paused);
@@ -93,6 +101,9 @@ public class Game extends Activity implements Runnable {
 	}
 
 	public void run() {
+		int frames = 0;
+		long startTime = System.nanoTime();	
+		long lastTime = System.nanoTime();
 		while(true) {
 			synchronized (stateChanges) {
 				for (int i=0; i<stateChanges.size(); i++) {
@@ -119,8 +130,10 @@ public class Game extends Activity implements Runnable {
 					continue;
 				canvas = surfaceHolder.lockCanvas();
 				fillEvents();
+				long currentTime = System.nanoTime();
 				if (screen != null) 
-					screen.update(0);
+					screen.update((currentTime - lastTime) / 1000000000.0f);
+				lastTime = currentTime;
 				freeEvents();
 				src.left = 0;
 				src.top = 0;
@@ -133,7 +146,18 @@ public class Game extends Activity implements Runnable {
 				canvas.drawBitmap(offscreenSurface, src, dst, null);
 				surfaceHolder.unlockCanvasAndPost(canvas);
 			}
+			frames++;
+			// 1 second
+			if (System.nanoTime()-startTime > 1000000000) {
+				fps = frames;
+				frames = 0;
+				startTime = System.nanoTime();
+			}
 		}
+	}
+	
+	public int getFrameRate() {
+		return fps;
 	}
 	
 	public void clearFrameBuffer(int color) {
@@ -219,12 +243,32 @@ public class Game extends Activity implements Runnable {
 			touchEventBuffer.clear();
 		}
 	}
+	
 	private void freeEvents() {
 		synchronized(touchEventBuffer) {
 			for (int i=0; i<touchEvents.size(); i++) {
 				touchEventPool.free(touchEvents.get(i));
 			}
 			touchEvents.clear();
+		}
+	}
+	
+	public Sound loadSound(String fileName) {
+		try {
+			AssetFileDescriptor assetDescriptor = getAssets().openFd(fileName);
+			int soundId = soundPool.load(assetDescriptor, 0);
+			return new Sound(soundPool, soundId);
+		} catch (IOException e) {
+			throw new RuntimeException("Couldnt load sound " + fileName);
+		}
+	}
+	
+	public Music loadMusic(String fileName) {
+		try {
+			AssetFileDescriptor assetDescriptor = getAssets().openFd(fileName);
+			return new Music(assetDescriptor);
+		} catch (IOException e) {
+			throw new RuntimeException("Couldnt load music " + fileName);
 		}
 	}
 }
