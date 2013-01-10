@@ -70,7 +70,8 @@ public class MultiTouchHandler implements TouchHandler, OnTouchListener {
         synchronized(touchEventBuffer) {
             TouchEvent touchEvent = null;
             int action = event.getAction() & MotionEvent.ACTION_MASK;
-            int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+            @SuppressWarnings("deprecation")
+			int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
             int pointerId = event.getPointerId(pointerIndex);
     
             switch (action) {

@@ -1,11 +1,11 @@
 package com.example.towerdefence;
 
-public class TouchEventPool extends Pool {
+public class TouchEventPool extends Pool<TouchEvent> {
 
 	@Override
-	protected Object newItem() {
+	protected TouchEvent newItem() {
 		// TODO Auto-generated method stub
-		return null;
+		return new TouchEvent();
 	}
 
 }

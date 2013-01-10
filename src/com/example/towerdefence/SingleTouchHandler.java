@@ -22,7 +22,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-import com.badlogic.agd.TouchEvent.TouchEventType;
 
 /**
  * This class implements touch event handling for Android 1.5/1.6. 
