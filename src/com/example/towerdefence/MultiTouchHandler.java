@@ -24,7 +24,7 @@ import android.view.View.OnTouchListener;
 
 /**
  * This class implements touch event handling for Android 2.0 and
- * above. It supports multi-touch events as oposed to the {@link SingleTouchHandler}.
+ * above. It supports multi-touch events as opposed to the {@link SingleTouchHandler}.
  * It implements the {@link TouchHandler} interface and reports the current state
  * and the chronological events to the API client.
  * 
