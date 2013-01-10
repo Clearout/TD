@@ -4,12 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.View.OnKeyListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.app.Activity;
@@ -33,6 +37,10 @@ public class Game extends Activity implements Runnable {
 	Rect dst = new Rect();
 	private Bitmap offscreenSurface;
 	private int offscreenWidth, offscreenHeight;
+	private TouchHandler touchHandler;
+	private TouchEventPool touchEventPool = new TouchEventPool();
+	private ArrayList<TouchEvent> touchEvents = new ArrayList<TouchEvent>();
+	private ArrayList<TouchEvent> touchEventBuffer = new ArrayList<TouchEvent>();
 
 	@SuppressWarnings("deprecation")
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +54,10 @@ public class Game extends Activity implements Runnable {
 		surfaceHolder = surfaceView.getHolder();
 		screen = createStartScreen();
 		setOffscreenSurfaceOrientation();
+		if (Integer.parseInt(VERSION.SDK)< 5)
+			touchHandler = new SingleTouchHandler(surfaceView);
+		else
+			touchHandler = new MultiTouchHandler(surfaceView);
 	}
 	
 	public Screen createStartScreen() {
@@ -106,8 +118,10 @@ public class Game extends Activity implements Runnable {
 				if (!surfaceHolder.getSurface().isValid()) 
 					continue;
 				canvas = surfaceHolder.lockCanvas();
+				fillEvents();
 				if (screen != null) 
 					screen.update(0);
+				freeEvents();
 				src.left = 0;
 				src.top = 0;
 				src.right = offscreenSurface.getWidth() - 1;
@@ -166,6 +180,7 @@ public class Game extends Activity implements Runnable {
 		
 		canvas.drawBitmap(bitmap, src, dst, null);
 	}
+	
 	public void setOffscreenSurfaceOrientation() {
 		if (surfaceView.getWidth() > surfaceView.getHeight()) {
 			offscreenWidth = 1280;
@@ -176,10 +191,57 @@ public class Game extends Activity implements Runnable {
 		}
 		setOffscreenSurface(offscreenWidth, offscreenHeight);
 	}
+	
 	public void setOffscreenSurface(int width, int height) {
 		if (offscreenSurface != null) 
 			offscreenSurface.recycle();
 		offscreenSurface = Bitmap.createBitmap(width, height, Config.RGB_565);
 		canvas = new Canvas(offscreenSurface);
 	}
+	
+	public boolean isTouchDown(int pointer) {
+		return touchHandler.isTouchDown(pointer);
+	}
+	
+	public int getTouchX(int pointer) {
+		return (int)((touchHandler.getTouchX(pointer)/(float)surfaceView.getWidth())*offscreenSurface.getWidth());
+	}
+	
+	public int getTouchY(int pointer) {
+		return (int)((touchHandler.getTouchY(pointer)/(float)surfaceView.getHeight())*offscreenSurface.getHeight());
+	}
+	
+	private void fillEvents() {
+		synchronized(touchEventBuffer) {
+			for (int i=0; i<touchEventBuffer.size(); i++) {
+				touchEvents.add(touchEventBuffer.get(i));
+			}
+			touchEventBuffer.clear();
+		}
+	}
+	private void freeEvents() {
+		synchronized(touchEventBuffer) {
+			for (int i=0; i<touchEvents.size(); i++) {
+				touchEventPool.free(touchEvents.get(i));
+			}
+			touchEvents.clear();
+		}
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
