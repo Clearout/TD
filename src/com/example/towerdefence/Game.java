@@ -268,6 +268,9 @@ public class Game extends Activity implements Runnable {
 			throw new RuntimeException("Couldnt load music " + fileName);
 		}
 	}
+	public ArrayList<TouchEvent> getTouchEvents() {
+		return touchEvents;
+	}
 }
 
 
