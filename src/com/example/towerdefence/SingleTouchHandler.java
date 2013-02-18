@@ -88,7 +88,7 @@ public class SingleTouchHandler implements TouchHandler, OnTouchListener {
      * touch screen (touchDown, touchX, touchY), and writes new {@link TouchEvent} instances to the
      * touch event buffer provided by the user of this class. The method is synchronized on the touch 
      * event buffer as the buffer is filled on the UI thread (when this method is called) and emptied
-     * on the main loop thread in the {@link Game#run} method (see {@link Game#fillBuffers}). 
+     * on the main loop thread in the {@link GameByMe#run} method (see {@link GameByMe#fillBuffers}). 
      */
     @Override
     public boolean onTouch(View view, MotionEvent event) {
