@@ -7,10 +7,10 @@ public class MainMenuScreen extends Screen {
 	Bitmap background, play, exit, mute;
 	public MainMenuScreen(Game game) {
 		super(game);
-		background = game.loadBitmap("menuBackground.png");
-		play = game.loadBitmap("play.png");
-		exit = game.loadBitmap("exit.png");
-		mute = game.loadBitmap("mute.png");
+		background = game.loadBitmap("menu/menuBackground.png");
+		play = game.loadBitmap("menu/play.png");
+		exit = game.loadBitmap("menu/exit.png");
+		mute = game.loadBitmap("menu/mute.png");
 	}
 
 	public void update(float deltatime) {
