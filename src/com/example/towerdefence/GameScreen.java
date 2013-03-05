@@ -72,7 +72,10 @@ public class GameScreen extends Screen {
 //			return;
 //		}
 	}
-
+	private void nextWave() {
+		
+	}
+	
 	@Override
 	public void pause() {
 		if (state == State.Running) state = State.Paused;
