@@ -20,6 +20,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import touch.MultiTouchHandler;
+import touch.SingleTouchHandler;
+import touch.TouchEvent;
+import touch.TouchEventPool;
+import touch.TouchHandler;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -97,6 +103,8 @@ public abstract class Game extends Activity implements Runnable {
     private SoundPool soundPool;        
     /** the number of frames per second **/
     public int framesPerSecond = 0;
+    
+    public long oneSecond = 1000000000;
     
     /**
      * Implementation of the Activity's onCreate() method. Sets up the {@link WakeLock}, turns on 
