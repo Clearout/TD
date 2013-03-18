@@ -8,12 +8,13 @@ import pathfinder.Path.Step;
 import World.Map;
 import World.World;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 public class Creep implements Mover, Unit {
 	enum Direction { North, East, South, West }
 	public int xPos, yPos, life, fullLife, imageCounter, stepCounter, goldReward;
 	public float movespeed, imageXPos, imageYPos, lastXOffset, lastYOffset;
-	public Bitmap[] images;
+	protected Bitmap[] images;
 	public Bitmap activeImage;
 	public Bitmap healthBar;
 	public Direction direction;
@@ -23,11 +24,12 @@ public class Creep implements Mover, Unit {
 	private Path path;
 	private boolean dead;
 	private World world;
-	
+
 	public Creep() {}
-	
+
 	public Creep(Game game, World world, Map map, int xPos, int yPos, int life, int goldReward,
 			float movespeed) {
+		images = new Bitmap[1];
 		this.world = world;
 		this.xPos = xPos;
 		this.yPos = yPos;
@@ -38,31 +40,45 @@ public class Creep implements Mover, Unit {
 		imageCounter = 0;
 		lastTime = 0;
 		this.movespeed = movespeed;
-		activeImage = images[0];
 		lastXOffset = 0;
 		lastYOffset = 0;
 		this.map = map;
 		dead = false;
+		path = map.findPath(xPos, yPos, map.exitNode.x, map.exitNode.y);
+		stepCounter = 0;
+		direction = Direction.South;
 	}
-	
+	public void setActiveImage() {
+		activeImage = images[0];
+	}
+
 	public void animate(float deltaTime) {
-		float startTime = System.nanoTime();
 		lastTime += deltaTime;
 		if (lastTime > game.oneSecond / 5) {
 			imageCounter++;
 			imageCounter %= images.length;
 			activeImage = images[imageCounter];
-			lastTime = System.nanoTime() - startTime;
+			lastTime = 0;
 		}
 	}
 	public int calcImgXPos(float deltaTime) {
+		if (direction == Direction.East)
+			lastXOffset += movespeed*deltaTime;
+		if (direction == Direction.West)
+			lastXOffset -= movespeed*deltaTime;
+		
 		imageXPos = xPos * 72 + movespeed*deltaTime + lastXOffset;
-		lastXOffset = movespeed*deltaTime;
+		
 		return (int)imageXPos;
 	}
 	public int calcImgYPos(float deltaTime) {
-		imageYPos = yPos * 72 + 108 + movespeed*deltaTime + lastYOffset;
-		lastYOffset = movespeed*deltaTime;
+		if (direction == Direction.South)
+			lastYOffset += movespeed*deltaTime;
+		if (direction == Direction.North)
+			lastYOffset -= movespeed*deltaTime;
+		
+		imageYPos = yPos * 72 + 108  + lastYOffset;
+
 		return (int)imageYPos;
 	}
 	public void drawHealthBar() {
@@ -72,44 +88,53 @@ public class Creep implements Mover, Unit {
 
 	@Override
 	public void render(float deltaTime) {
-		animate(deltaTime);
-		game.drawBitmap(activeImage, calcImgXPos(deltaTime), calcImgYPos(deltaTime), 0, 0, activeImage.getWidth(), activeImage.getHeight());
-		drawHealthBar();
+		game.drawBitmap(activeImage, calcImgXPos(deltaTime), calcImgYPos(deltaTime));
+		//		drawHealthBar();
 	}
 	public void move(float deltaTime) {
-		float startTime = System.nanoTime();
 		lastMoveTime += deltaTime;
-		if (lastMoveTime > (72 / movespeed) * game.oneSecond) {
+		if (lastMoveTime > 72 / movespeed) {
 			move();
-			lastMoveTime = System.nanoTime() - startTime;
+			lastMoveTime = 0;
 		}
 	}
 	public void move() {
-		if (map.pathNotValid()) {
-			path = map.findPath(xPos, yPos, map.exit.x, map.exit.y);
-			stepCounter = 0;
-		}
-		Step step = path.getStep(stepCounter);
-		int oldX = xPos;
-		int oldY = yPos;
-		xPos = step.getX();
-		yPos = step.getY();
-		updateDirection(oldX, oldY, xPos, yPos);
+		//		if (map.pathNotValid(xPos, yPos)) {
+		//			path = map.findPath(xPos, yPos, map.exit.x, map.exit.y);
+		//			stepCounter = 0;
+		//			for (int i=0; i<path.getLength(); i++) 
+		//				Log.e("path: " + i, "x: " + path.getX(i) + " y: " + path.getY(i));
+		//		}
+		//		int oldX = xPos;
+		//		int oldY = yPos;
+		//		xPos = path.getX(stepCounter);
+		//		yPos = path.getY(stepCounter);
+		//		updateDirection(oldX, oldY, xPos, yPos);
+		//		stepCounter++;
+		lastXOffset = 0;
+		lastYOffset = 0;
+		path = map.findPath(xPos, yPos, map.exitNode.x, map.exitNode.y);
+		xPos = path.getX(1);
+		yPos = path.getY(1);
+		int nextX = path.getX(2);
+		int nextY = path.getY(2);
+		
+		updateDirection(xPos, yPos, nextX, nextY);
 		stepCounter++;
 	}
-	public void updateDirection(int oldX, int oldY, int xPos, int yPos) {
-		if (xPos > oldX) 
+	public void updateDirection(int x, int y, int nextX, int nextY) {
+		if (nextX > x) 
 			direction = Direction.East; 
-		else if (xPos < oldX)
+		else if (nextX < x)
 			direction = Direction.West;
-		else if (yPos > oldY)
+		else if (nextY > y)
 			direction = Direction.South;
 		else 
 			direction = Direction.North;
 		chooseImageSet();
 	}
 	public void chooseImageSet() {
-		
+
 	}
 	public void takeDamage(int damage) {
 		life -= damage;
@@ -126,6 +151,6 @@ public class Creep implements Mover, Unit {
 	@Override
 	public void update(float deltaTime) {
 		move(deltaTime);
-		
+
 	}
 }

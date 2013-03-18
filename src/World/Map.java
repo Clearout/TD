@@ -11,10 +11,11 @@ import android.util.Log;
 public class Map implements TileBasedMap {
 	public final int FREE, TAKEN, ENTER, EXIT, X_LENGTH, Y_LENGTH;
 	int[][] area;
-	public Node enter;
-	public Node exit;
+	public Node enterNode;
+	public Node exitNode;
 	private AStarPathFinder pathfinder;
 	private boolean[][] visited;
+	private boolean validPathExists;
 
 	public Map(int enterX, int enterY, int exitX, int exitY) {
 		FREE = 0;
@@ -26,16 +27,16 @@ public class Map implements TileBasedMap {
 		pathfinder = new AStarPathFinder(this, 1000, false);
 		area = new int[X_LENGTH][Y_LENGTH];
 		visited = new boolean[X_LENGTH][Y_LENGTH];
-		
+		validPathExists = false;
 		for (int i=0; i < X_LENGTH; i++) {
 			for (int j=0; j < Y_LENGTH; j++) {
 				area[i][j] = FREE;
 			}
 		}
 		area[enterX][enterY] = ENTER;
-		enter = pathfinder.makeNode(enterX, enterY);
+		enterNode = pathfinder.makeNode(enterX, enterY);
 		area[exitX][exitY] = EXIT;
-		exit = pathfinder.makeNode(exitX, exitY);
+		exitNode = pathfinder.makeNode(exitX, exitY);
 	}
 
 	public void setTaken(int x, int y) {
@@ -73,10 +74,14 @@ public class Map implements TileBasedMap {
 		return pathfinder.findPath(new Creep(), x, y, tx, ty);
 	}
 	public Path fromEnterToExit() {
-		return pathfinder.findPath(new Creep(), enter.x, enter.y, exit.x, exit.y);
+		return pathfinder.findPath(new Creep(), enterNode.x, enterNode.y, exitNode.x, exitNode.y);
 	}
-	public boolean pathNotValid() {
-		return true;
+	public boolean pathNotValid(int x, int y) {
+		if (pathfinder.findPath(new Creep(), x, y, exitNode.x, exitNode.y) == null)
+			validPathExists = false;
+		else
+			validPathExists = true;
+		return validPathExists;
 	}
 	@Override
 	public int getWidthInTiles() {

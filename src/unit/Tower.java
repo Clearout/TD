@@ -8,30 +8,23 @@ import World.World;
 import android.graphics.Bitmap;
 
 public class Tower implements Unit {
-	private int x, y, damage, price, level, maxLevel, projectileSpeed, range;
-	private Bitmap[] images;
-	private Bitmap currentImage, projectileImage;
+	public int x, y, damage, price, level, maxLevel, projectileSpeed, range;
+	protected Bitmap[] images;
+	protected Bitmap currentImage, projectileImage;
 	private Game game;
 	private World world;
 	private ArrayList<Projectile> projectiles;
 	private long lastAttackTime;
-	private double attackspeed;
+	public double attackspeed;
 	private boolean sold;
 	
-	public Tower(Game game, World controller, Bitmap[] images, int x, int y, int damage, double attackspeed, int range, int price, int maxLevel) {
+	public Tower(Game game, World controller, int x, int y) {//, int damage, double attackspeed, int range, int price, int maxLevel) {
 		this.game = game;
-		this.images = images;
-		currentImage = images[0];
 		this.world = controller;
 		this.x = x;
 		this.y = y;
-		this.damage = damage;
-		this.price = price;
-		this.maxLevel = maxLevel;
-		this.attackspeed = attackspeed;
-		this.range = range;
 		lastAttackTime = 0;
-		level = 0;
+		level = 1;
 		projectiles = new ArrayList<Projectile>();
 		sold = false;
 	}
@@ -61,14 +54,14 @@ public class Tower implements Unit {
 	}
 	@Override
 	public void render(float deltaTime) {
-		game.drawBitmap(currentImage, x, y, 0, 0, currentImage.getWidth(), currentImage.getHeight());
+		game.drawBitmap(currentImage, x*72, y*72 + 108);
 		for (int i=0; i<projectiles.size(); i++) {
 			projectiles.get(i).render(deltaTime);
 		}
 	}
 	
 	public Projectile attack(Creep target) {
-		return new Projectile(game, target, projectileImage, x, y, projectileSpeed, damage);
+		return new Projectile(game, target, projectileImage, this, x, y, projectileSpeed, damage);
 	}
 	
 	public void findTarget() {
@@ -85,11 +78,10 @@ public class Tower implements Unit {
 	}
 	@Override
 	public void update(float deltaTime) {
-		long startTime = System.nanoTime();
 		lastAttackTime += deltaTime;
-		if (lastAttackTime > attackspeed * game.oneSecond) {
+		if (lastAttackTime > attackspeed) {
 			findTarget();
-			lastAttackTime = System.nanoTime() - startTime;
+			lastAttackTime = 0;
 		}
 		for (int i=0; i<projectiles.size(); i++) {
 			if (projectiles.get(i).hasHitTarget()) {

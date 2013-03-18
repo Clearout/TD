@@ -37,9 +37,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -48,11 +45,8 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.view.View.OnKeyListener;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -135,11 +129,12 @@ public abstract class Game extends Activity implements Runnable {
         surfaceView.setFocusableInTouchMode(true);
         surfaceView.requestFocus();
         
-        if(Integer.parseInt(VERSION.SDK) < 5) 
-            touchHandler = new SingleTouchHandler(surfaceView, touchEventBuffer, touchEventPool);
-        else
-            touchHandler = new MultiTouchHandler(surfaceView, touchEventBuffer, touchEventPool);
-        
+//        if(Integer.parseInt(VERSION.SDK) < 5) 
+//            touchHandler = new SingleTouchHandler(surfaceView, touchEventBuffer, touchEventPool);
+//        else
+//            touchHandler = new MultiTouchHandler(surfaceView, touchEventBuffer, touchEventPool);
+//        
+        touchHandler = new MultiTouchHandler(surfaceView, touchEventBuffer, touchEventPool);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);        
         this.soundPool = new SoundPool(20, AudioManager.STREAM_MUSIC, 0);
         

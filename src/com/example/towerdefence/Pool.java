@@ -16,4 +16,7 @@ public abstract class Pool<T> {
 	public void free(T item) {
 		items.add(item);
 	}
+	public void clear() {
+		items.clear();
+	}
 }
