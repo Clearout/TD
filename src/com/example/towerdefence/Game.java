@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import touch.MultiTouchHandler;
+import touch.Pool;
 import touch.SingleTouchHandler;
 import touch.TouchEvent;
 import touch.TouchEventPool;

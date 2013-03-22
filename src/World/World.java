@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.example.towerdefence.Game;
 
+import ui.MainMenuScreen;
 import unit.Creep;
 import unit.Tower;
 
@@ -29,6 +30,7 @@ public class World {
 		creeps = new ArrayList<Creep>();
 		towers = new ArrayList<Tower>();
 		lastTime = 0;
+		life = 1;
 	}
 
 	public void update(float deltaTime) {
@@ -48,7 +50,7 @@ public class World {
 		for (int i=0; i<creeps.size(); i++) {
 			creeps.get(i).update(deltaTime);
 			if (creeps.get(i).isDead()) {
-				getGold(creeps.get(i).goldReward);
+				addGold(creeps.get(i).goldReward);
 				creeps.remove(i);
 			}
 		}
@@ -65,18 +67,14 @@ public class World {
 		return null;
 	}
 
-	public void getGold(int gold) {
+	public void addGold(int gold) {
 		gold += gold;
 	}
 
 	private void nextLevel() {
 		game.drawBitmap(game.loadBitmap("ui/nextWave.png"), 0, 108);
 
-		try {
-			game.wait((long)(game.oneSecond));
-		} catch (InterruptedException e) {
-			Log.e("Interrupted at nextLevel()", "Waiting failed at World.nextLevel()");
-		}
+//		game.setScreen(new MainMenuScreen(game));
 
 		levelCounter++;
 		level = new Level(game, this, levelCounter);
@@ -89,7 +87,14 @@ public class World {
 	public void addTower(Tower tower) {
 		towers.add(tower);
 	}
-
+	public void loseLife() {
+		life--;
+		if (life == 0)
+			gameOver();
+	}
+	public void gameOver() {
+		
+	}
 	public Bitmap getBackground() {
 		return currentBackground;
 	}

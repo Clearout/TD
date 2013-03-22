@@ -5,6 +5,7 @@ import unit.Tower;
 import com.example.towerdefence.Game;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 public class Icon {
 	private Bitmap image;
@@ -37,8 +38,9 @@ public class Icon {
 		game.drawBitmap(image, x(), y());
 	}
 	
-	public boolean touched(int x, int y) {
-		if (x >= x() && x <= x() + w() && y >= y() && y <= y() + h()) 
+	public boolean touched() {
+		if (game.getTouchX(0) >= x() && game.getTouchX(0) <= x() + w() && 
+				game.getTouchY(0) >= y() && game.getTouchY(0) <= y() + h() && game.isTouchDown(0)) 
 			return true;
 		return false;
 	}

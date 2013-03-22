@@ -6,6 +6,7 @@ import com.example.towerdefence.Game;
 
 import World.World;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 public class Tower implements Unit {
 	public int x, y, damage, price, level, maxLevel, projectileSpeed, range;
@@ -14,8 +15,8 @@ public class Tower implements Unit {
 	private Game game;
 	private World world;
 	private ArrayList<Projectile> projectiles;
-	private long lastAttackTime;
-	public double attackspeed;
+	private float lastAttackTime;
+	public float attackspeed;
 	private boolean sold;
 	
 	public Tower(Game game, World controller, int x, int y) {//, int damage, double attackspeed, int range, int price, int maxLevel) {
@@ -23,10 +24,11 @@ public class Tower implements Unit {
 		this.world = controller;
 		this.x = x;
 		this.y = y;
-		lastAttackTime = 0;
+		lastAttackTime = 0f;
 		level = 1;
 		projectiles = new ArrayList<Projectile>();
 		sold = false;
+		projectileSpeed = 10;
 	}
 	public int getPrice() { 
 		return price;
@@ -35,14 +37,14 @@ public class Tower implements Unit {
 		return (int)(price*0.5);
 	}
 	public void sell() {
-		world.getGold((int)(price*0.5));
+		world.addGold((int)(price*0.5));
 		sold = true;
 	}
 	public void upgrade() {
-		if (isUpgradable()) {
+		if (isUpgradable() == true) {
 			price += upgradeCost();
-			level ++;
-			currentImage = images[level];
+			level++;
+			currentImage = images[level - 1];
 			damage += (int) (0.5* damage);
 		}
 	}
@@ -50,7 +52,9 @@ public class Tower implements Unit {
 		return (int)(0.25 * price);
 	}
 	public boolean isUpgradable() {
-		return level < maxLevel;
+		if (level <= maxLevel)
+			return true;
+		return false;
 	}
 	@Override
 	public void render(float deltaTime) {
@@ -69,6 +73,7 @@ public class Tower implements Unit {
 		for (int i=0; i<creeps.size(); i++) {
 			if (creeps.get(i).xPos < x + range && creeps.get(i).xPos > x - range &&
 					creeps.get(i).yPos < y + range && creeps.get(i).yPos > y - range) {
+
 				projectiles.add(attack(creeps.get(i)));
 			}
 		}
@@ -79,6 +84,7 @@ public class Tower implements Unit {
 	@Override
 	public void update(float deltaTime) {
 		lastAttackTime += deltaTime;
+
 		if (lastAttackTime > attackspeed) {
 			findTarget();
 			lastAttackTime = 0;

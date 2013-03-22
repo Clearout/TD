@@ -8,7 +8,7 @@ public class NormalTower extends Tower {
 	
 	public NormalTower(Game game, World controller, int x, int y) {
 		super(game, controller, x, y);
-		attackspeed = 0.2;
+		attackspeed = 0.5f;
 		images = new Bitmap[3];
 		images[0] = game.loadBitmap("towers/normalTower.png");
 		images[1] = game.loadBitmap("towers/normalTowerLevel2.png");
@@ -17,7 +17,7 @@ public class NormalTower extends Tower {
 		projectileImage = game.loadBitmap("towers/normalTowerProjectile.png");
 		damage = 5;
 		price = 5;
-		range = 2;
+		range = 5;
 		maxLevel = 3;
 	}
 

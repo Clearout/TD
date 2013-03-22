@@ -6,6 +6,7 @@ import com.example.towerdefence.Game;
 
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 public class Projectile implements Unit {
 	private Creep target;
@@ -26,22 +27,27 @@ public class Projectile implements Unit {
 		this.damage = damage;
 		hasHitTarget = false;
 	}
-	
+	public int imageYPos() {
+		return y*72 + 108;
+	}
+	public int imageXPos() {
+		return x*72;
+	}
 	public void update(float deltaTime) {
-		double theta = Math.atan((target.imageYPos - y) / (target.imageXPos - x));
-		if ((target.imageYPos - y) <= 0 && (target.imageXPos - x) <= 0)
+
+		float theta = (float)Math.atan((target.imageYPos - imageYPos()) / (target.imageXPos - imageXPos()));
+		if ((target.imageYPos - imageYPos()) <= 0 && (target.imageXPos - imageXPos()) <= 0)
 			theta -= Math.PI;
-		else if ((target.imageXPos - x) <= 0)
+		else if ((target.imageXPos - imageXPos()) <= 0)
 			theta += Math.PI;
 		x = x + (int)(deltaTime * speed * Math.cos(theta));
-		y = x + (int)(deltaTime * speed * Math.sin(theta));
-		if (hitTarget())
-			target.takeDamage(damage);
+		y = y + (int)(deltaTime * speed * Math.sin(theta));
 	}
 	
 	public boolean hitTarget() {
-		if (x == target.imageXPos && y == target.imageYPos) {
+		if (imageXPos() == target.imageXPos && imageYPos() == target.imageYPos) {
 			hasHitTarget = true;
+			target.takeDamage(damage);
 			return true;
 		}
 		return false;
@@ -51,6 +57,6 @@ public class Projectile implements Unit {
 	}
 	@Override
 	public void render(float deltaTime) {
-		game.drawBitmap(image, x, y);
+		game.drawBitmap(image, imageXPos(), imageYPos());
 	}
 }

@@ -70,6 +70,14 @@ public class Map implements TileBasedMap {
 		}
 		return true;
 	}
+	public boolean isEnterOrExit(int x, int y) {
+		boolean b = false;
+		if (x == enterNode.x && y == enterNode.y)
+			b = true;
+		if (x == exitNode.x && y == exitNode.y)
+			b = true;
+		return b;
+	}
 	public Path findPath(int x, int y, int tx, int ty) {
 		return pathfinder.findPath(new Creep(), x, y, tx, ty);
 	}

@@ -49,7 +49,7 @@ public class Level {
 		if (level == 1) {
 			map = new Map(3, 0, 9, 13);
 			ArrayList<Creep> c = new ArrayList<Creep>();
-			c.add(new NormalCreep(game, world, map, map.enterNode.x, map.enterNode.y, 10, 10, 1));
+			c.add(new NormalCreep(game, world, map, map.enterNode.x, map.enterNode.y, 10, 10, 50));
 			waves.add(new Wave(c, 1));
 			background = game.loadBitmap("maps/cracks.png");
 		}

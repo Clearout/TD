@@ -1,6 +1,5 @@
 package ui;
 
-import pathfinder.Mover;
 import unit.Creep;
 import unit.NormalTower;
 import unit.Tower;
@@ -14,20 +13,27 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 public class GameScreen extends Screen {
-	enum State { Paused, Running, GameOver }
-	Bitmap background, playButton, buildButton, menuButton, bottomBar, pauseButton, 
-	topBar, man, heart, coin, clock, nextWave, buildBG;
+	enum State {
+		Paused, Running, GameOver
+	}
+
+	private Bitmap background, bottomBar, topBar, man, heart, coin, clock,
+			buildBG;
+	private Bitmap[] ffButtons;
+	private Button playPause, fastForward, menu;
 	private Icon backIcon, upgradeIcon, sellIcon;
 	State state = State.Running;
 	private int coinArea, clockArea, heartArea, manArea, bottomBarSeparator;
 	private World world;
 	private Renderer renderer;
-	private boolean buildMenuUp, inIngameMenu, upgradeMenuUp;
+	private boolean buildMenuUp, inIngameMenu, touchDelay;
 	private int xToUse, yToUse;
 	private Icon[] towers;
+	private float lastTouch, timeSpeed;
 
 	public GameScreen(Game game) {
 		super(game);
+		timeSpeed = 1;
 		// initialize bitmaps
 		world = new World(game);
 		renderer = new Renderer(world);
@@ -40,58 +46,69 @@ public class GameScreen extends Screen {
 		heart = game.loadBitmap("ui/heart.png");
 		man = game.loadBitmap("ui/man.png");
 
-		buildButton = game.loadBitmap("ui/buildButton.png");
-		menuButton = game.loadBitmap("ui/menuButton.png");
-		pauseButton = game.loadBitmap("ui/pauseButton.png");
-		playButton = game.loadBitmap("ui/playButton.png");
-
 		buildBG = game.loadBitmap("ui/transparentBuildMenuBackground.png");
 		backIcon = new Icon(game, "ui/backIcon.png", 0, 0);
 		upgradeIcon = new Icon(game, "ui/upgradeIcon.png", 0, 0);
 		sellIcon = new Icon(game, "ui/sellIcon.png", 0, 0);
-		nextWave = game.loadBitmap("ui/nextWave.png");
 
 		coinArea = 270;
 		clockArea = heartArea = manArea = 150;
-		bottomBarSeparator = 32;
+		bottomBarSeparator = 50;
 		buildMenuUp = false;
 		inIngameMenu = false;
-		upgradeMenuUp = false;
 		towers = new Icon[1];
 		towers[0] = new Icon(game, "ui/normalTowerIcon.png", 0, 0);
 		towers[0].setTower(new NormalTower(game, world, 100, 100));
-		
+
+		playPause = new Button(game, "ui/pauseButton.png",
+				240 - 144 - bottomBarSeparator, topBar.getHeight()
+						+ background.getHeight() + 12);
+		menu = new Button(game, "ui/homeButton.png",
+				720 - 144 - bottomBarSeparator, topBar.getHeight()
+						+ background.getHeight() + 12);
+		fastForward = new Button(game, "ui/fastForwardButton.png",
+				480 - 144 - bottomBarSeparator, topBar.getHeight()
+						+ background.getHeight() + 12);
+
+		ffButtons = new Bitmap[3];
+		ffButtons[0] = game.loadBitmap("ui/fastForwardButton.png");
+		ffButtons[1] = game.loadBitmap("ui/fastForwardButton2.png");
+		ffButtons[2] = game.loadBitmap("ui/fastForwardButton3.png");
+
+		lastTouch = 0;
+		touchDelay = false;
 	}
 
 	public void update(float deltaTime) {
+		lastTouch += deltaTime;
+		if (lastTouch > 0.2) {
+			touchDelay = false;
+			lastTouch = 0;
+		}
 		// Drawing background and bars
-		game.drawBitmap(background, 0, topBar.getHeight() + 1, 0, 0, background.getWidth(), background.getHeight());
-		game.drawBitmap(topBar, 0, 0, 0, 0, topBar.getWidth(), topBar.getHeight());
-		game.drawBitmap(bottomBar, 0, background.getHeight() + topBar.getHeight() + 1,
-				0, 0, bottomBar.getWidth(), bottomBar.getHeight());
+		game.drawBitmap(background, 0, topBar.getHeight() + 1);
+		game.drawBitmap(topBar, 0, 0);
+		game.drawBitmap(bottomBar, 0,
+				background.getHeight() + topBar.getHeight() + 1);
 
 		// Drawing icons on the topBar
-		game.drawBitmap(coin, coinArea - coin.getWidth() - 22, 72 - coin.getHeight()/2,
-				0, 0, coin.getWidth(), coin.getHeight());
-		game.drawBitmap(heart, coinArea + heartArea - heart.getWidth() - 2, 72 - heart.getHeight()/2,
-				0, 0, heart.getWidth(), heart.getHeight());
-		game.drawBitmap(man, coinArea + heartArea + manArea - man.getWidth() - 2, 72 - man.getHeight()/2,
-				0, 0, man.getWidth(), man.getHeight());
-		game.drawBitmap(clock, coinArea + heartArea + manArea + clockArea - clock.getWidth() - 2, 72 - clock.getHeight()/2,
-				0, 0, clock.getWidth(), clock.getHeight());
+		game.drawBitmap(coin, coinArea - coin.getWidth() - 22,
+				72 - coin.getHeight() / 2, 0, 0, coin.getWidth(),
+				coin.getHeight());
+		game.drawBitmap(heart, coinArea + heartArea - heart.getWidth() - 2,
+				72 - heart.getHeight() / 2, 0, 0, heart.getWidth(),
+				heart.getHeight());
+		game.drawBitmap(man, coinArea + heartArea + manArea - man.getWidth()
+				- 2, 72 - man.getHeight() / 2, 0, 0, man.getWidth(),
+				man.getHeight());
+		game.drawBitmap(clock, coinArea + heartArea + manArea + clockArea
+				- clock.getWidth() - 2, 72 - clock.getHeight() / 2, 0, 0,
+				clock.getWidth(), clock.getHeight());
 
 		// Drawing buttons on the bottomBar
-		game.drawBitmap(playButton, bottomBarSeparator, topBar.getHeight() + background.getHeight() + 12, 
-				0, 0, playButton.getWidth(), playButton.getHeight());
-		game.drawBitmap(buildButton, 2*bottomBarSeparator + playButton.getWidth(),
-				topBar.getHeight() + background.getHeight() + 12,
-				0, 0, buildButton.getWidth(), buildButton.getHeight());
-		game.drawBitmap(pauseButton, 3*bottomBarSeparator + playButton.getWidth() + buildButton.getWidth(),
-				topBar.getHeight() + background.getHeight() + 12, 0, 0, 
-				pauseButton.getWidth(), pauseButton.getHeight());
-		game.drawBitmap(menuButton, 4*bottomBarSeparator + playButton.getWidth() + buildButton.getWidth() + pauseButton.getWidth(),
-				topBar.getHeight() + background.getHeight() + 12, 0, 0,
-				menuButton.getWidth(), menuButton.getHeight());
+		playPause.draw();
+		menu.draw();
+		fastForward.draw();
 
 		if (inIngameMenu) {
 			game.drawBitmap(buildBG, 110, 400);
@@ -99,40 +116,62 @@ public class GameScreen extends Screen {
 			backIcon.sy(buildBG.getHeight() - backIcon.h() + 400 - 50);
 			backIcon.draw();
 			backPressed();
-			if (buildMenuUp && !upgradeMenuUp) {
+			if (buildMenuUp) {
 				drawTowerIcons();
 				buildTowerPressed();
-			} 
-			if (upgradeMenuUp && !buildMenuUp) {
+			} else {
 				drawUpgradeAndSellIcons();
 				upgradeOrSellPressed();
 			}
-		} 
-		else {		
-			world.update(deltaTime);
-			renderer.render(deltaTime);
+		} else {
+			world.update(deltaTime * timeSpeed);
+			renderer.render(deltaTime * timeSpeed);
 			gridPressed();
 		}
 
 		// Endre til play knapp
-		if (state == State.Paused && game.getTouchEvents().size() > 0) 
-			state = State.Running;
-		//		if (state == State.Running && game.getTouchY(0) < pauseY && game.getTouchX(0) < pause X) {
-		//			state = State.Paused;
-		//			return;
-		//		}
+		if (state == State.Paused) {
+			if (playPause.touched()) {
+				touchDelay = true;
+				resume();
+			}
+		}
+		if (state == State.Running) {
+			if (playPause.touched()) {
+				touchDelay = true;
+				pause();
+			}
+		}
+		if (touchDelay == false) {
+			if (menu.touched()) {
+				touchDelay = true;
+				game.setScreen(new MainMenuScreen(game));
+				this.dispose();
+			}
+			if (fastForward.touched()) {
+				touchDelay = true;
+				if (timeSpeed != 0) {
+					timeSpeed++;
+					if (timeSpeed > 3)
+						timeSpeed = 1;
+
+					fastForward.setImg(ffButtons[(int) (timeSpeed - 1)]);
+				}
+			}
+		}
 	}
-	
+
 	private void drawTowerIcons() {
-		int j=1;
-		for (int i=0; i<towers.length; i++) {
-			towers[i].sx(110 + (i+1)*50 + i*towers[i].w());
-			towers[i].sy(400 + 50*j + (j-1)*towers[i].h());
-			if ((i+1)%3 == 0)
+		int j = 1;
+		for (int i = 0; i < towers.length; i++) {
+			towers[i].sx(110 + (i + 1) * 50 + i * towers[i].w());
+			towers[i].sy(400 + 50 * j + (j - 1) * towers[i].h());
+			if ((i + 1) % 3 == 0)
 				j++;
 			towers[i].draw();
 		}
 	}
+
 	private void drawUpgradeAndSellIcons() {
 		upgradeIcon.sx(110 + 50);
 		upgradeIcon.sy(400 + 50);
@@ -141,88 +180,113 @@ public class GameScreen extends Screen {
 		upgradeIcon.draw();
 		sellIcon.draw();
 	}
+
 	private void backPressed() {
-		if (backIcon.touched(game.getTouchX(0), game.getTouchY(0)) && game.isTouchDown(0)) {
+		if (backIcon.touched() && touchDelay == false) {
 			buildMenuUp = false;
 			inIngameMenu = false;
-			upgradeMenuUp = false;
+			touchDelay = true;
 		}
 	}
+
 	private void buildTowerPressed() {
-		for (int i=0; i<towers.length; i++) {
-			if (towers[i].touched(game.getTouchX(0), game.getTouchY(0)) && game.isTouchDown(0)) {
+		for (int i = 0; i < towers.length; i++) {
+			if (towers[i].touched() && touchDelay == false) {
 				Tower t = null;
 				// add different towers here
 				if (towers[i].tower() instanceof NormalTower)
 					t = new NormalTower(game, world, xToUse, yToUse);
 				if (t != null) {
-//					if (t.price <= world.gold) {
-						world.addTower(t);
-//						world.gold -= t.price;
-//					}
+					// if (t.price <= world.gold) {
+					world.addTower(t);
+					world.map.setTaken(xToUse, yToUse);
+					// world.gold -= t.price;
+					// }
 				}
-				upgradeMenuUp = false;
 				buildMenuUp = false;
 				inIngameMenu = false;
+				touchDelay = true;
 				xToUse = -1;
 				yToUse = -1;
 			}
 		}
 	}
+
 	private void upgradeOrSellPressed() {
-		
+		if (touchDelay == false) {
+			if (upgradeIcon.touched()) {
+				touchDelay = true;
+				world.findTower(xToUse, yToUse).upgrade();
+				inIngameMenu = false;
+			} else if (sellIcon.touched()) {
+				touchDelay = true;
+				world.findTower(xToUse, yToUse).sell();
+				inIngameMenu = false;
+			}
+		}
 	}
+
 	private void gridPressed() {
 		// Traverse the grid
-		for (int i=0; i<world.map.X_LENGTH; i++) {
-			for (int j=0; j<world.map.Y_LENGTH; j++) {
-				// If touch inside one of the 72x72 pixel squares
-				if (game.getTouchX(0) >= i*72 && game.getTouchY(0) >= j*72 + 108 &&
-						game.getTouchX(0) < (i+1)*72 && game.getTouchY(0) < (j+1)*72 + 108 &&
-						game.isTouchDown(0)) {
-					// If it's not the enter area nor the exit
-					if (world.map.enterNode.x != i && world.map.enterNode.y != j && 
-							world.map.exitNode.x != i && world.map.exitNode.y != j) {
-						inIngameMenu = true;
-						xToUse = i;
-						yToUse = j;
-						// If it is not already taken
-						if (!world.map.blocked(new Creep(), i,  j)) {
-							world.map.setTaken(i, j);
-							// Build if there still exists a path from enter to exit
-							// so that you cannot wall units in, otherwise set the tile free again
-							if (world.map.fromEnterToExit() != null) {
-								buildMenuUp = true;
-								world.map.setFree(i, j);
+		if (touchDelay == false) {
+
+			for (int i = 0; i < world.map.X_LENGTH; i++) {
+				for (int j = 0; j < world.map.Y_LENGTH; j++) {
+
+					// If touch inside one of the 72x72 pixel squares
+					if (game.getTouchX(0) >= i * 72
+							&& game.getTouchY(0) >= j * 72 + 108
+							&& game.getTouchX(0) < (i + 1) * 72
+							&& game.getTouchY(0) < (j + 1) * 72 + 108
+							&& game.isTouchDown(0)) {
+
+						// If it's not the enter area nor the exit
+						touchDelay = true;
+						if (world.map.isEnterOrExit(i, j) == false) {
+							xToUse = i;
+							yToUse = j;
+
+							// If it is not already taken
+							if (world.map.blocked(new Creep(), i, j) == false) {
+								world.map.setTaken(i, j);
+
+								if (world.map.fromEnterToExit() != null) {
+									world.map.setFree(i, j);
+									inIngameMenu = true;
+									buildMenuUp = true;
+								} else {
+									world.map.setFree(i, j);
+								}
+
 							} else {
-								world.map.setFree(i, j);
-								inIngameMenu = false;
+								inIngameMenu = true;
 								buildMenuUp = false;
-								xToUse = -1;
-								yToUse = -1;
+								// If tile is already occupied by a tower
 							}
-							// If tile is already occupied by a tower
-						} else {
-							upgradeMenuUp = true;
 						}
 					}
 				}
 			}
 		}
 	}
+
 	private void upgrade(int x, int y) {
 		Tower tower = world.findTower(x, y);
 		tower.upgrade();
 	}
+
 	@Override
 	public void pause() {
-		if (state == State.Running) state = State.Paused;
+		state = State.Paused;
+		playPause.setImg(game.loadBitmap("ui/playButton.png"));
+		timeSpeed = 0;
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
-
+		state = State.Running;
+		playPause.setImg(game.loadBitmap("ui/pauseButton.png"));
+		timeSpeed = 1;
 	}
 
 	@Override
