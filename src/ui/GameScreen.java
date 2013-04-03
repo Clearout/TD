@@ -3,13 +3,15 @@ package ui;
 import unit.Creep;
 import unit.NormalTower;
 import unit.Tower;
+import world.Renderer;
+import world.World;
 
 import com.example.towerdefence.Game;
 import com.example.towerdefence.Screen;
 
-import World.Renderer;
-import World.World;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.util.Log;
 
 public class GameScreen extends Screen {
@@ -17,13 +19,12 @@ public class GameScreen extends Screen {
 		Paused, Running, GameOver
 	}
 
-	private Bitmap background, bottomBar, topBar, man, heart, coin, clock,
-			buildBG;
+	private Bitmap background, bottomBar, topBar, man, heart, coin, buildBG;
 	private Bitmap[] ffButtons;
 	private Button playPause, fastForward, menu;
 	private Icon backIcon, upgradeIcon, sellIcon;
 	State state = State.Running;
-	private int coinArea, clockArea, heartArea, manArea, bottomBarSeparator;
+	private int coinArea, heartArea, manArea, bottomBarSeparator;
 	private World world;
 	private Renderer renderer;
 	private boolean buildMenuUp, inIngameMenu, touchDelay;
@@ -38,24 +39,25 @@ public class GameScreen extends Screen {
 		world = new World(game);
 		renderer = new Renderer(world);
 		background = world.getBackground();
+		
 		bottomBar = game.loadBitmap("ui/bottomBar.png");
 		topBar = game.loadBitmap("ui/topBar.png");
-
-		clock = game.loadBitmap("ui/clock.png");
 		coin = game.loadBitmap("ui/coin.png");
 		heart = game.loadBitmap("ui/heart.png");
 		man = game.loadBitmap("ui/man.png");
-
 		buildBG = game.loadBitmap("ui/transparentBuildMenuBackground.png");
+		
 		backIcon = new Icon(game, "ui/backIcon.png", 0, 0);
 		upgradeIcon = new Icon(game, "ui/upgradeIcon.png", 0, 0);
 		sellIcon = new Icon(game, "ui/sellIcon.png", 0, 0);
 
-		coinArea = 270;
-		clockArea = heartArea = manArea = 150;
+		coinArea = 320;
+		heartArea = manArea = 200;
 		bottomBarSeparator = 50;
+
 		buildMenuUp = false;
 		inIngameMenu = false;
+
 		towers = new Icon[1];
 		towers[0] = new Icon(game, "ui/normalTowerIcon.png", 0, 0);
 		towers[0].setTower(new NormalTower(game, world, 100, 100));
@@ -93,17 +95,20 @@ public class GameScreen extends Screen {
 
 		// Drawing icons on the topBar
 		game.drawBitmap(coin, coinArea - coin.getWidth() - 22,
-				72 - coin.getHeight() / 2, 0, 0, coin.getWidth(),
-				coin.getHeight());
+				72 - coin.getHeight() / 2);
+		game.drawText(Typeface.DEFAULT, "" + world.getGold(), 50,
+				72 - coin.getHeight() / 2 + 10, Color.BLACK, 60);
+
 		game.drawBitmap(heart, coinArea + heartArea - heart.getWidth() - 2,
-				72 - heart.getHeight() / 2, 0, 0, heart.getWidth(),
-				heart.getHeight());
+				72 - heart.getHeight() / 2);
+		game.drawText(Typeface.DEFAULT, "" + world.getLife(), coinArea,
+				72 - coin.getHeight() / 2 + 10, Color.BLACK, 60);
+
 		game.drawBitmap(man, coinArea + heartArea + manArea - man.getWidth()
-				- 2, 72 - man.getHeight() / 2, 0, 0, man.getWidth(),
-				man.getHeight());
-		game.drawBitmap(clock, coinArea + heartArea + manArea + clockArea
-				- clock.getWidth() - 2, 72 - clock.getHeight() / 2, 0, 0,
-				clock.getWidth(), clock.getHeight());
+				- 2, 72 - man.getHeight() / 2);
+		game.drawText(Typeface.DEFAULT, "" + world.getLevel().waveNumber,
+				coinArea + heartArea, 72 - man.getHeight() / 2 + 10,
+				Color.BLACK, 60);
 
 		// Drawing buttons on the bottomBar
 		playPause.draw();
@@ -128,21 +133,19 @@ public class GameScreen extends Screen {
 			renderer.render(deltaTime * timeSpeed);
 			gridPressed();
 		}
-
-		// Endre til play knapp
-		if (state == State.Paused) {
-			if (playPause.touched()) {
-				touchDelay = true;
-				resume();
-			}
-		}
-		if (state == State.Running) {
-			if (playPause.touched()) {
-				touchDelay = true;
-				pause();
-			}
-		}
 		if (touchDelay == false) {
+
+			if (state == State.Paused) {
+				if (playPause.touched()) {
+					touchDelay = true;
+					resume();
+				}
+			} else if (state == State.Running) {
+				if (playPause.touched()) {
+					touchDelay = true;
+					pause();
+				}
+			}
 			if (menu.touched()) {
 				touchDelay = true;
 				game.setScreen(new MainMenuScreen(game));
@@ -268,11 +271,6 @@ public class GameScreen extends Screen {
 				}
 			}
 		}
-	}
-
-	private void upgrade(int x, int y) {
-		Tower tower = world.findTower(x, y);
-		tower.upgrade();
 	}
 
 	@Override

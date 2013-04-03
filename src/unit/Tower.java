@@ -2,9 +2,10 @@ package unit;
 
 import java.util.ArrayList;
 
+import world.World;
+
 import com.example.towerdefence.Game;
 
-import World.World;
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -18,8 +19,8 @@ public class Tower implements Unit {
 	private float lastAttackTime;
 	public float attackspeed;
 	private boolean sold;
-	
-	public Tower(Game game, World controller, int x, int y) {//, int damage, double attackspeed, int range, int price, int maxLevel) {
+
+	public Tower(Game game, World controller, int x, int y) {
 		this.game = game;
 		this.world = controller;
 		this.x = x;
@@ -30,57 +31,71 @@ public class Tower implements Unit {
 		sold = false;
 		projectileSpeed = 10;
 	}
-	public int getPrice() { 
+
+	public int getPrice() {
 		return price;
 	}
+
 	public int upgradeCost() {
-		return (int)(price*0.5);
+		return (int) (price * 0.5);
 	}
+
 	public void sell() {
-		world.addGold((int)(price*0.5));
+		world.addGold((int) (price * 0.5));
 		sold = true;
+		world.map.setFree(x, y);
 	}
+
 	public void upgrade() {
 		if (isUpgradable() == true) {
 			price += upgradeCost();
 			level++;
 			currentImage = images[level - 1];
-			damage += (int) (0.5* damage);
+			damage += (int) (0.5 * damage);
 		}
 	}
+
 	public int sellPrice() {
-		return (int)(0.25 * price);
+		return (int) (0.25 * price);
 	}
+
 	public boolean isUpgradable() {
-		if (level <= maxLevel)
+		if (level < maxLevel)
 			return true;
 		return false;
 	}
+
 	@Override
 	public void render(float deltaTime) {
-		game.drawBitmap(currentImage, x*72, y*72 + 108);
-		for (int i=0; i<projectiles.size(); i++) {
+		game.drawBitmap(currentImage, x * 72, y * 72 + 108);
+		for (int i = 0; i < projectiles.size(); i++) {
 			projectiles.get(i).render(deltaTime);
 		}
 	}
-	
+
 	public Projectile attack(Creep target) {
-		return new Projectile(game, target, projectileImage, this, x, y, projectileSpeed, damage);
+		return new Projectile(game, target, projectileImage, this, x, y,
+				projectileSpeed, damage);
 	}
-	
+
 	public void findTarget() {
 		ArrayList<Creep> creeps = world.creeps;
-		for (int i=0; i<creeps.size(); i++) {
-			if (creeps.get(i).xPos < x + range && creeps.get(i).xPos > x - range &&
-					creeps.get(i).yPos < y + range && creeps.get(i).yPos > y - range) {
+		for (int i = 0; i < creeps.size(); i++) {
+			if (creeps.get(i).xPos < x + range
+					&& creeps.get(i).xPos > x - range
+					&& creeps.get(i).yPos < y + range
+					&& creeps.get(i).yPos > y - range) {
 
 				projectiles.add(attack(creeps.get(i)));
+				return;
 			}
 		}
 	}
+
 	public boolean isSold() {
 		return sold;
 	}
+
 	@Override
 	public void update(float deltaTime) {
 		lastAttackTime += deltaTime;
@@ -89,7 +104,8 @@ public class Tower implements Unit {
 			findTarget();
 			lastAttackTime = 0;
 		}
-		for (int i=0; i<projectiles.size(); i++) {
+		for (int i = 0; i < projectiles.size(); i++) {
+			projectiles.get(i).hitTarget();
 			if (projectiles.get(i).hasHitTarget()) {
 				projectiles.remove(i);
 				continue;
@@ -97,5 +113,5 @@ public class Tower implements Unit {
 			projectiles.get(i).update(deltaTime);
 		}
 	}
-	
+
 }

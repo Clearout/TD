@@ -5,8 +5,8 @@ import com.example.towerdefence.Game;
 import pathfinder.Mover;
 import pathfinder.Path;
 import pathfinder.Path.Step;
-import World.Map;
-import World.World;
+import world.Map;
+import world.World;
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -16,7 +16,7 @@ public class Creep implements Mover, Unit {
 	}
 
 	public int xPos, yPos, life, fullLife, imageCounter, stepCounter,
-	goldReward;
+			goldReward;
 	public float movespeed, imageXPos, imageYPos, lastXOffset, lastYOffset;
 	protected Bitmap[] images;
 	public Bitmap activeImage;
@@ -32,12 +32,12 @@ public class Creep implements Mover, Unit {
 	public Creep() {
 	}
 
-	public Creep(Game game, World world, Map map, int xPos, int yPos, int life,
+	public Creep(Game game, World world, Map map, int life,
 			int goldReward, float movespeed) {
 		images = new Bitmap[1];
 		this.world = world;
-		this.xPos = xPos;
-		this.yPos = yPos;
+		xPos = map.enterNode.x;
+		yPos = map.enterNode.y;
 		this.life = life;
 		this.goldReward = goldReward;
 		fullLife = life;
@@ -149,6 +149,10 @@ public class Creep implements Mover, Unit {
 	public void chooseImageSet() {
 
 	}
+	
+	private int getScore() {
+		return (int)(5*life + movespeed + 3*goldReward);
+	}
 
 	public void takeDamage(int damage) {
 		life -= damage;
@@ -158,7 +162,7 @@ public class Creep implements Mover, Unit {
 
 	public void die() {
 		dead = true;
-		world.addGold(goldReward);
+		world.addScore(getScore());
 	}
 
 	public boolean isDead() {

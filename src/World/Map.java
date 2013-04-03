@@ -1,4 +1,4 @@
-package World;
+package world;
 
 import pathfinder.AStarPathFinder;
 import pathfinder.AStarPathFinder.Node;
@@ -28,8 +28,8 @@ public class Map implements TileBasedMap {
 		area = new int[X_LENGTH][Y_LENGTH];
 		visited = new boolean[X_LENGTH][Y_LENGTH];
 		validPathExists = false;
-		for (int i=0; i < X_LENGTH; i++) {
-			for (int j=0; j < Y_LENGTH; j++) {
+		for (int i = 0; i < X_LENGTH; i++) {
+			for (int j = 0; j < Y_LENGTH; j++) {
 				area[i][j] = FREE;
 			}
 		}
@@ -41,13 +41,16 @@ public class Map implements TileBasedMap {
 
 	public void setTaken(int x, int y) {
 		if (x >= 0 && x < X_LENGTH && y >= 0 && y < Y_LENGTH) {
-			if (area[x][y] != TAKEN || area[x][y] != ENTER || area[x][y] != EXIT) {
+			if (area[x][y] != TAKEN || area[x][y] != ENTER
+					|| area[x][y] != EXIT) {
 				area[x][y] = TAKEN;
 			} else {
-				Log.d("Area already taken", "Map.setTaken(), area with x=" + x + " y=" + y + " is taken");
+				Log.d("Area already taken", "Map.setTaken(), area with x=" + x
+						+ " y=" + y + " is taken");
 			}
 		} else {
-			Log.d("Out of bounds" , "Map.setTaken() out of bounds with x=" + x + " y=" + y);
+			Log.d("Out of bounds", "Map.setTaken() out of bounds with x=" + x
+					+ " y=" + y);
 		}
 	}
 
@@ -56,13 +59,15 @@ public class Map implements TileBasedMap {
 			if (area[x][y] != FREE || area[x][y] != ENTER || area[x][y] != EXIT) {
 				area[x][y] = FREE;
 			} else {
-				Log.d("Area already free", "Map.setFree(), area with x=" + x + " y=" + y + " is free");
+				Log.d("Area already free", "Map.setFree(), area with x=" + x
+						+ " y=" + y + " is free");
 			}
 		} else {
-			Log.d("Out of bounds" , "Map.setFree() out of bounds with x=" + x + " y=" + y);
+			Log.d("Out of bounds", "Map.setFree() out of bounds with x=" + x
+					+ " y=" + y);
 		}
 	}
-	
+
 	public boolean isTaken(int x, int y) {
 		if (x >= 0 && x < X_LENGTH && y >= 0 && y < Y_LENGTH) {
 			if (area[x][y] != TAKEN)
@@ -70,6 +75,7 @@ public class Map implements TileBasedMap {
 		}
 		return true;
 	}
+
 	public boolean isEnterOrExit(int x, int y) {
 		boolean b = false;
 		if (x == enterNode.x && y == enterNode.y)
@@ -78,12 +84,16 @@ public class Map implements TileBasedMap {
 			b = true;
 		return b;
 	}
+
 	public Path findPath(int x, int y, int tx, int ty) {
 		return pathfinder.findPath(new Creep(), x, y, tx, ty);
 	}
+
 	public Path fromEnterToExit() {
-		return pathfinder.findPath(new Creep(), enterNode.x, enterNode.y, exitNode.x, exitNode.y);
+		return pathfinder.findPath(new Creep(), enterNode.x, enterNode.y,
+				exitNode.x, exitNode.y);
 	}
+
 	public boolean pathNotValid(int x, int y) {
 		if (pathfinder.findPath(new Creep(), x, y, exitNode.x, exitNode.y) == null)
 			validPathExists = false;
@@ -91,6 +101,7 @@ public class Map implements TileBasedMap {
 			validPathExists = true;
 		return validPathExists;
 	}
+
 	@Override
 	public int getWidthInTiles() {
 		// TODO Auto-generated method stub
@@ -106,7 +117,7 @@ public class Map implements TileBasedMap {
 	@Override
 	public void pathFinderVisited(int x, int y) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -120,9 +131,10 @@ public class Map implements TileBasedMap {
 		// TODO Auto-generated method stub
 		return 1;
 	}
+
 	public void clearVisited() {
-		for (int i=0; i<X_LENGTH; i++)
-			for (int j=0; j<Y_LENGTH; j++)
+		for (int i = 0; i < X_LENGTH; i++)
+			for (int j = 0; j < Y_LENGTH; j++)
 				visited[i][j] = false;
 	}
 }
