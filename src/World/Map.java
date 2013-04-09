@@ -94,7 +94,7 @@ public class Map implements TileBasedMap {
 				exitNode.x, exitNode.y);
 	}
 
-	public boolean pathNotValid(int x, int y) {
+	public boolean pathValid(int x, int y) {
 		if (pathfinder.findPath(new Creep(), x, y, exitNode.x, exitNode.y) == null)
 			validPathExists = false;
 		else

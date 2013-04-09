@@ -2,6 +2,8 @@ package unit;
 
 import world.World;
 import android.graphics.Bitmap;
+import android.util.Log;
+
 import com.example.towerdefence.Game;
 
 public class NormalTower extends Tower {
@@ -9,16 +11,22 @@ public class NormalTower extends Tower {
 	public NormalTower(Game game, World controller, int x, int y) {
 		super(game, controller, x, y);
 		attackspeed = 0.5f;
-		images = new Bitmap[3];
-		images[0] = game.loadBitmap("towers/normalTower.png");
-		images[1] = game.loadBitmap("towers/normalTowerLevel2.png");
-		images[2] = game.loadBitmap("towers/normalTowerLevel3.png");
-		currentImage = images[0];
-		projectileImage = game.loadBitmap("towers/normalTowerProjectile.png");
-		damage = 1;
+		imageNames = new String[3];
+		imageNames[0] = "towers/normal/normalTower.png";
+		imageNames[1] = "towers/normal/normalTowerLevel2.png";
+		imageNames[2] = "towers/normal/normalTowerLevel3.png";
+		currentImage = game.imageRepository.getTowerImage(imageNames[0]);
+		projectileImage = game.imageRepository
+				.getTowerImage("towers/normal/normalTowerProjectile.png");
+		damage = 2;
 		price = 5;
-		range = 5;
+		range = 2;
 		maxLevel = 3;
+		projectileSpeed = 8;
 	}
-
+	
+	@Override
+	protected void doTowerSpecificChanges() {
+		attackspeed -= 0.1f;
+	}
 }

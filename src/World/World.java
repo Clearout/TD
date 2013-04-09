@@ -21,16 +21,16 @@ public class World {
 	private Game game;
 	private Bitmap currentBackground;
 
-	public World(Game game) {
+	public World(Game game, int levelNum) {
 		this.game = game;
-		levelCounter = 2;
+		levelCounter = levelNum;
 		level = new Level(game, this, levelCounter);
 		currentBackground = level.getBackground();
 		map = level.getMap();
 		creeps = new ArrayList<Creep>();
 		towers = new ArrayList<Tower>();
-		life = 1;
-		gold = 0;
+		life = 100;
+		gold = 2000;
 	}
 
 	public void update(float deltaTime) {

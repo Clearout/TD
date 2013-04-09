@@ -40,7 +40,7 @@ public class GameOverScreen extends Screen {
 				&& game.getTouchX(0) < 120 + retry.getWidth()
 				&& game.getTouchY(0) > 1280 / 2
 				&& game.getTouchY(0) < 1280 / 2 + retry.getHeight()) {
-			game.setScreen(new GameScreen(game));
+			game.setScreen(new GameScreen(game, lastLevel));
 		}
 	}
 

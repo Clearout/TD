@@ -17,13 +17,14 @@ public class Creep implements Mover, Unit {
 
 	public int xPos, yPos, life, fullLife, imageCounter, stepCounter,
 			goldReward;
-	public float movespeed, imageXPos, imageYPos, lastXOffset, lastYOffset;
-	protected Bitmap[] images;
+	public float movespeed, imageXPos, imageYPos, lastXOffset, lastYOffset, speedEffect;
+	protected String[] down, up, right, left;
+	protected Bitmap[] activeImages;
 	public Bitmap activeImage;
 	public Bitmap healthBar;
 	public Direction direction;
 	private Game game;
-	private float lastTime, lastMoveTime;
+	private float lastTime, lastMoveTime, effectTimeLeft;
 	private Map map;
 	private Path path;
 	private boolean dead;
@@ -32,9 +33,12 @@ public class Creep implements Mover, Unit {
 	public Creep() {
 	}
 
-	public Creep(Game game, World world, Map map, int life,
-			int goldReward, float movespeed) {
-		images = new Bitmap[1];
+	public Creep(Game game, World world, Map map, int life, int goldReward,
+			float movespeed) {
+		up = new String[4];
+		down = new String[4];
+		left = new String[4];
+		right = new String[4];
 		this.world = world;
 		xPos = map.enterNode.x;
 		yPos = map.enterNode.y;
@@ -45,6 +49,7 @@ public class Creep implements Mover, Unit {
 		imageCounter = 0;
 		lastTime = 0;
 		this.movespeed = movespeed;
+		speedEffect = 1;
 		lastXOffset = 0;
 		lastYOffset = 0;
 		this.map = map;
@@ -52,18 +57,15 @@ public class Creep implements Mover, Unit {
 		path = map.findPath(xPos, yPos, map.exitNode.x, map.exitNode.y);
 		stepCounter = 0;
 		direction = Direction.South;
-	}
-
-	public void setActiveImage() {
-		activeImage = images[0];
+		effectTimeLeft = 0;
 	}
 
 	public void animate(float deltaTime) {
 		lastTime += deltaTime;
-		if (lastTime > game.oneSecond / 5) {
+		if (lastTime > 0.25) {
 			imageCounter++;
-			imageCounter %= images.length;
-			activeImage = images[imageCounter];
+			imageCounter %= activeImages.length;
+			activeImage = activeImages[imageCounter];
 			lastTime = 0;
 		}
 	}
@@ -74,7 +76,7 @@ public class Creep implements Mover, Unit {
 		if (direction == Direction.West)
 			lastXOffset -= movespeed * deltaTime;
 
-		imageXPos = xPos * 72 + movespeed * deltaTime + lastXOffset;
+		imageXPos = xPos * 72 + lastXOffset;
 
 		return (int) imageXPos;
 	}
@@ -96,11 +98,17 @@ public class Creep implements Mover, Unit {
 				healthBar.getHeight() * (life / fullLife));
 	}
 
+	public void setEffect(float effect, float duration) {
+		speedEffect = effect;
+		effectTimeLeft = duration;
+	}
+
 	@Override
 	public void render(float deltaTime) {
-		game.drawBitmap(activeImage, calcImgXPos(deltaTime),
-				calcImgYPos(deltaTime));
+		game.drawBitmap(activeImage, calcImgXPos(deltaTime*speedEffect),
+				calcImgYPos(deltaTime*speedEffect));
 		// drawHealthBar();
+		animate(deltaTime*speedEffect);
 	}
 
 	public void move(float deltaTime) {
@@ -135,6 +143,7 @@ public class Creep implements Mover, Unit {
 	}
 
 	public void updateDirection(int x, int y, int nextX, int nextY) {
+		Direction lastDir = direction;
 		if (nextX > x)
 			direction = Direction.East;
 		else if (nextX < x)
@@ -143,15 +152,32 @@ public class Creep implements Mover, Unit {
 			direction = Direction.South;
 		else
 			direction = Direction.North;
-		chooseImageSet();
+		if (lastDir != direction)
+			chooseImageSet();
 	}
 
-	public void chooseImageSet() {
-
+	protected void chooseImageSet() {
+		if (direction == Direction.South)
+			activeImages = setImages(down);
+		else if (direction == Direction.North)
+			activeImages = setImages(up);
+		else if (direction == Direction.West)
+			activeImages = setImages(left);
+		else
+			activeImages = setImages(right);
 	}
-	
+
+	private Bitmap[] setImages(String[] imgStr) {
+		Bitmap[] img = new Bitmap[imgStr.length];
+		for (int i = 0; i < img.length; i++) {
+			img[i] = game.imageRepository.getCreepImage(imgStr[i]);
+		}
+		activeImage = img[imageCounter];
+		return img;
+	}
+
 	private int getScore() {
-		return (int)(5*life + movespeed + 3*goldReward);
+		return (int) (5 * life + movespeed + 3 * goldReward);
 	}
 
 	public void takeDamage(int damage) {
@@ -168,10 +194,15 @@ public class Creep implements Mover, Unit {
 	public boolean isDead() {
 		return dead;
 	}
-
+	private void removeEffect() {
+		speedEffect = 1;
+		effectTimeLeft = 0;
+	}
 	@Override
 	public void update(float deltaTime) {
-		move(deltaTime);
-
+		move(deltaTime*speedEffect);
+		effectTimeLeft -= deltaTime;
+		if (effectTimeLeft <= 0)
+			removeEffect();
 	}
 }

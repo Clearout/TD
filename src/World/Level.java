@@ -3,7 +3,9 @@ package world;
 import java.util.ArrayList;
 
 import unit.Creep;
-import unit.NormalCreep;
+import unit.HoundCreep;
+import unit.ImpCreep;
+import unit.ZealotCreep;
 
 import android.graphics.Bitmap;
 
@@ -67,8 +69,14 @@ public class Level {
 				ArrayList<Creep> creeps = new ArrayList<Creep>();
 
 				for (int j = 0; j < 2 * (i + 1); j++) {
-					creeps.add(new NormalCreep(game, world, map, 5 + i * 2, 2
+					creeps.add(new ImpCreep(game, world, map, 5 + i * 2, 2
 							+ (int) 0.2 * i, (float) 72 + 7 * i));
+					if (j % 3 == 0 || j % 4 == 0)
+						creeps.add(new HoundCreep(game, world, map, 5 + i * 2,
+								2 + (int) 0.2 * i, (float) 72 + 7 * i));
+					if (j % 2 == 0)
+						creeps.add(new ZealotCreep(game, world, map, 5 + i * 2,
+								2 + (int) 0.2 * i, (float) 72 + 7 * i));
 				}
 				waves.add(new Wave(creeps, 1 + (int) 0.5 * i));
 			}
@@ -81,7 +89,7 @@ public class Level {
 				ArrayList<Creep> c = new ArrayList<Creep>();
 
 				for (int j = 0; j < 5; j++) {
-					c.add(new NormalCreep(game, world, map, 5 + i * 2, 2
+					c.add(new ImpCreep(game, world, map, 5 + i * 2, 2
 							+ (int) 0.2 * i, (float) 72 + 20 * i));
 				}
 				waves.add(new Wave(c, 1 + (int) 0.5 * i));

@@ -44,7 +44,7 @@ public class MainMenuScreen extends Screen {
 				&& game.getTouchX(0) < 120 + play.getWidth()
 				&& game.getTouchY(0) > 1280 / 2
 				&& game.getTouchY(0) < 1280 / 2 + play.getHeight()) {
-			game.setScreen(new GameScreen(game));
+			game.setScreen(new GameScreen(game, 1));
 		}
 	}
 

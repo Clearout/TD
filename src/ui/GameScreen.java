@@ -1,6 +1,7 @@
 package ui;
 
 import unit.Creep;
+import unit.FrostTower;
 import unit.NormalTower;
 import unit.Tower;
 import world.Renderer;
@@ -29,24 +30,24 @@ public class GameScreen extends Screen {
 	private Renderer renderer;
 	private boolean buildMenuUp, inIngameMenu, touchDelay;
 	private int xToUse, yToUse;
-	private Icon[] towers;
+	private Icon[] towerIcons;
 	private float lastTouch, timeSpeed;
 
-	public GameScreen(Game game) {
+	public GameScreen(Game game, int levelNum) {
 		super(game);
 		timeSpeed = 1;
 		// initialize bitmaps
-		world = new World(game);
+		world = new World(game, levelNum);
 		renderer = new Renderer(world);
 		background = world.getBackground();
-		
+
 		bottomBar = game.loadBitmap("ui/bottomBar.png");
 		topBar = game.loadBitmap("ui/topBar.png");
 		coin = game.loadBitmap("ui/coin.png");
 		heart = game.loadBitmap("ui/heart.png");
 		man = game.loadBitmap("ui/man.png");
 		buildBG = game.loadBitmap("ui/transparentBuildMenuBackground.png");
-		
+
 		backIcon = new Icon(game, "ui/backIcon.png", 0, 0);
 		upgradeIcon = new Icon(game, "ui/upgradeIcon.png", 0, 0);
 		sellIcon = new Icon(game, "ui/sellIcon.png", 0, 0);
@@ -58,9 +59,11 @@ public class GameScreen extends Screen {
 		buildMenuUp = false;
 		inIngameMenu = false;
 
-		towers = new Icon[1];
-		towers[0] = new Icon(game, "ui/normalTowerIcon.png", 0, 0);
-		towers[0].setTower(new NormalTower(game, world, 100, 100));
+		towerIcons = new Icon[2];
+		towerIcons[0] = new Icon(game, "ui/normalTowerIcon.png", 0, 0);
+		towerIcons[0].setTower(new NormalTower(game, world, 100, 100));
+		towerIcons[1] = new Icon(game, "ui/frostTowerIcon.png", 0, 0);
+		towerIcons[1].setTower(new FrostTower(game, world, 100, 100));
 
 		playPause = new Button(game, "ui/pauseButton.png",
 				240 - 144 - bottomBarSeparator, topBar.getHeight()
@@ -87,8 +90,28 @@ public class GameScreen extends Screen {
 			touchDelay = false;
 			lastTouch = 0;
 		}
-		// Drawing background and bars
 		game.drawBitmap(background, 0, topBar.getHeight() + 1);
+		if (inIngameMenu) {
+			renderer.render(0);
+			game.drawBitmap(buildBG, 110, 400);
+			backIcon.sx(buildBG.getWidth() - backIcon.w() + 110 - 50);
+			backIcon.sy(buildBG.getHeight() - backIcon.h() + 400 - 50);
+			backIcon.draw();
+			backPressed();
+			if (buildMenuUp) {
+				drawTowerIcons();
+				buildTowerPressed();
+			} else {
+				drawUpgradeAndSellIcons();
+				upgradeOrSellPressed();
+			}
+		} else {
+			world.update(deltaTime * timeSpeed);
+			renderer.render(deltaTime * timeSpeed);
+			gridPressed();
+		}
+		// Drawing background and bars
+		
 		game.drawBitmap(topBar, 0, 0);
 		game.drawBitmap(bottomBar, 0,
 				background.getHeight() + topBar.getHeight() + 1);
@@ -114,25 +137,6 @@ public class GameScreen extends Screen {
 		playPause.draw();
 		menu.draw();
 		fastForward.draw();
-
-		if (inIngameMenu) {
-			game.drawBitmap(buildBG, 110, 400);
-			backIcon.sx(buildBG.getWidth() - backIcon.w() + 110 - 50);
-			backIcon.sy(buildBG.getHeight() - backIcon.h() + 400 - 50);
-			backIcon.draw();
-			backPressed();
-			if (buildMenuUp) {
-				drawTowerIcons();
-				buildTowerPressed();
-			} else {
-				drawUpgradeAndSellIcons();
-				upgradeOrSellPressed();
-			}
-		} else {
-			world.update(deltaTime * timeSpeed);
-			renderer.render(deltaTime * timeSpeed);
-			gridPressed();
-		}
 		if (touchDelay == false) {
 
 			if (state == State.Paused) {
@@ -166,12 +170,12 @@ public class GameScreen extends Screen {
 
 	private void drawTowerIcons() {
 		int j = 1;
-		for (int i = 0; i < towers.length; i++) {
-			towers[i].sx(110 + (i + 1) * 50 + i * towers[i].w());
-			towers[i].sy(400 + 50 * j + (j - 1) * towers[i].h());
+		for (int i = 0; i < towerIcons.length; i++) {
+			towerIcons[i].sx(110 + (i + 1) * 50 + i * towerIcons[i].w());
+			towerIcons[i].sy(400 + 50 * j + (j - 1) * towerIcons[i].h());
 			if ((i + 1) % 3 == 0)
 				j++;
-			towers[i].draw();
+			towerIcons[i].draw();
 		}
 	}
 
@@ -193,18 +197,20 @@ public class GameScreen extends Screen {
 	}
 
 	private void buildTowerPressed() {
-		for (int i = 0; i < towers.length; i++) {
-			if (towers[i].touched() && touchDelay == false) {
+		for (int i = 0; i < towerIcons.length; i++) {
+			if (towerIcons[i].touched() && touchDelay == false) {
 				Tower t = null;
 				// add different towers here
-				if (towers[i].tower() instanceof NormalTower)
+				if (towerIcons[i].tower() instanceof NormalTower)
 					t = new NormalTower(game, world, xToUse, yToUse);
+				else if (towerIcons[i].tower() instanceof FrostTower)
+					t = new FrostTower(game, world, xToUse, yToUse);
 				if (t != null) {
-					// if (t.price <= world.gold) {
-					world.addTower(t);
-					world.map.setTaken(xToUse, yToUse);
-					// world.gold -= t.price;
-					// }
+					if (t.price <= world.getGold()) {
+						world.addTower(t);
+						world.map.setTaken(xToUse, yToUse);
+						world.addGold(-t.price);
+					}
 				}
 				buildMenuUp = false;
 				inIngameMenu = false;
@@ -254,9 +260,18 @@ public class GameScreen extends Screen {
 								world.map.setTaken(i, j);
 
 								if (world.map.fromEnterToExit() != null) {
+									boolean canBuild = true;
+									for (int ci = 0; ci < world.creeps.size(); ci++) {
+										Creep c = world.creeps.get(ci);
+										if (!world.map
+												.pathValid(c.xPos, c.yPos))
+											canBuild = false;
+									}
+									if (canBuild) {
+										inIngameMenu = true;
+										buildMenuUp = true;
+									}
 									world.map.setFree(i, j);
-									inIngameMenu = true;
-									buildMenuUp = true;
 								} else {
 									world.map.setFree(i, j);
 								}

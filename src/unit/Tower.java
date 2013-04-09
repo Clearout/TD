@@ -11,12 +11,12 @@ import android.util.Log;
 
 public class Tower implements Unit {
 	public int x, y, damage, price, level, maxLevel, projectileSpeed, range;
-	protected Bitmap[] images;
+	protected String[] imageNames;
 	protected Bitmap currentImage, projectileImage;
-	private Game game;
-	private World world;
+	protected Game game;
+	protected World world;
 	private ArrayList<Projectile> projectiles;
-	private float lastAttackTime;
+	protected float lastAttackTime;
 	public float attackspeed;
 	private boolean sold;
 
@@ -29,7 +29,7 @@ public class Tower implements Unit {
 		level = 1;
 		projectiles = new ArrayList<Projectile>();
 		sold = false;
-		projectileSpeed = 10;
+		projectileSpeed = 1;
 	}
 
 	public int getPrice() {
@@ -48,11 +48,20 @@ public class Tower implements Unit {
 
 	public void upgrade() {
 		if (isUpgradable() == true) {
-			price += upgradeCost();
-			level++;
-			currentImage = images[level - 1];
-			damage += (int) (0.5 * damage);
+			if (price <= world.getGold()) {
+				world.addGold(-price);
+				price += upgradeCost();
+				level++;
+				currentImage = game.imageRepository
+						.getTowerImage(imageNames[level - 1]);
+				damage += (int) (0.5 * damage);
+				doTowerSpecificChanges();
+			}
 		}
+	}
+
+	protected void doTowerSpecificChanges() {
+
 	}
 
 	public int sellPrice() {
@@ -81,10 +90,10 @@ public class Tower implements Unit {
 	public void findTarget() {
 		ArrayList<Creep> creeps = world.creeps;
 		for (int i = 0; i < creeps.size(); i++) {
-			if (creeps.get(i).xPos < x + range
-					&& creeps.get(i).xPos > x - range
-					&& creeps.get(i).yPos < y + range
-					&& creeps.get(i).yPos > y - range) {
+			if (creeps.get(i).xPos <= x + range
+					&& creeps.get(i).xPos >= x - range
+					&& creeps.get(i).yPos <= y + range
+					&& creeps.get(i).yPos >= y - range) {
 
 				projectiles.add(attack(creeps.get(i)));
 				return;

@@ -133,6 +133,7 @@ public abstract class Game extends Activity implements Runnable {
 	public int framesPerSecond = 0;
 
 	public long oneSecond = 1000000000;
+	public ImageRepository imageRepository;
 
 	/**
 	 * Implementation of the Activity's onCreate() method. Sets up the
@@ -162,7 +163,7 @@ public abstract class Game extends Activity implements Runnable {
 		} else {
 			setOffscreenSurface(720, 1280);
 		}
-
+		
 		surfaceView.setFocusableInTouchMode(true);
 		surfaceView.requestFocus();
 
@@ -177,7 +178,7 @@ public abstract class Game extends Activity implements Runnable {
 				touchEventPool);
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		this.soundPool = new SoundPool(20, AudioManager.STREAM_MUSIC, 0);
-
+		imageRepository = new ImageRepository(this);
 		screen = createStartScreen();
 	}
 

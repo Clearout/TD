@@ -24,8 +24,8 @@ public class Projectile implements Unit {
 		this.target = target;
 		this.image = image;
 		this.tower = tower;
-		this.x = x * 72;
-		this.y = y * 72 + 108;
+		this.x = x * 72 + 36;
+		this.y = y * 72 + 108 + 36;
 		this.speed = speed;
 		this.damage = damage;
 		hasHitTarget = false;
