@@ -24,13 +24,13 @@ public class World {
 	public World(Game game, int levelNum) {
 		this.game = game;
 		levelCounter = levelNum;
-		level = new Level(game, this, levelCounter);
+		level = new Level(game, this, levelCounter, true);
 		currentBackground = level.getBackground();
 		map = level.getMap();
 		creeps = new ArrayList<Creep>();
 		towers = new ArrayList<Tower>();
-		life = 100;
-		gold = 2000;
+		life = 20;
+		gold = 50;
 	}
 
 	public void update(float deltaTime) {
@@ -40,17 +40,18 @@ public class World {
 		} else {
 			level.update(deltaTime);
 		}
+
+		for (int i = 0; i < towers.size(); i++) {
+			towers.get(i).update(deltaTime);
+			if (towers.get(i).isSold())
+				towers.remove(i);
+		}
 		for (int i = 0; i < creeps.size(); i++) {
 			creeps.get(i).update(deltaTime);
 			if (creeps.get(i).isDead()) {
 				addGold(creeps.get(i).goldReward);
 				creeps.remove(i);
 			}
-		}
-		for (int i = 0; i < towers.size(); i++) {
-			towers.get(i).update(deltaTime);
-			if (towers.get(i).isSold())
-				towers.remove(i);
 		}
 	}
 
@@ -70,7 +71,7 @@ public class World {
 		// game.setScreen(new MainMenuScreen(game));
 
 		levelCounter++;
-		level = new Level(game, this, levelCounter);
+		level = new Level(game, this, levelCounter, false);
 		currentBackground = level.getBackground();
 		towers.clear();
 		creeps.clear();

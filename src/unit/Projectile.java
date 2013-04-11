@@ -9,11 +9,11 @@ import android.graphics.Rect;
 import android.util.Log;
 
 public class Projectile implements Unit {
-	private Creep target;
-	protected float x, y;
+	protected Creep target;
+	protected float x, y, theta;
 	protected int speed, damage;
 	protected Bitmap image;
-	private Game game;
+	protected Game game;
 	private boolean hasHitTarget;
 	protected Tower tower;
 	private Rect tRect, pRect;
@@ -24,11 +24,12 @@ public class Projectile implements Unit {
 		this.target = target;
 		this.image = image;
 		this.tower = tower;
-		this.x = x * 72 + 36;
+		this.x = x * 72 + 36 - image.getWidth() / 2;
 		this.y = y * 72 + 108 + 36;
 		this.speed = speed;
 		this.damage = damage;
 		hasHitTarget = false;
+		theta = 0;
 	}
 
 	public int imageYPos() {
@@ -39,15 +40,27 @@ public class Projectile implements Unit {
 		return (int) x;
 	}
 
+	public float targetImageY() {
+		return target.imageYPos + 36;
+	}
+
+	public float targetImageX() {
+		return target.imageXPos + 36;
+	}
+
 	public void update(float deltaTime) {
 
-		float theta = (float) Math.atan((target.imageYPos + 36 - y)
-				/ (target.imageXPos + 36 - x));
-		if ((target.imageYPos + 36 - y) <= 0
-				&& (target.imageXPos + 36 - x) <= 0)
-			theta -= Math.PI;
-		else if ((target.imageXPos + 36 - x) <= 0)
-			theta += Math.PI;
+		theta = (float) Math.atan2(
+				(targetImageY() - y - image.getHeight() / 2), (targetImageX()
+						- x - image.getWidth() / 2));
+		// if ((targetImageY() - y) <= 0 && (targetImageX() - x) <= 0) {
+		// theta += Math.PI;
+		// theta *= -1;
+		// } else if ((targetImageX() - x) < 0) {
+		// theta -= Math.PI;
+		// theta *= -1;
+		// }
+
 		x += (int) (deltaTime * speed * Math.cos(theta) * 72);
 		y += (int) (deltaTime * speed * Math.sin(theta) * 72);
 	}
@@ -57,7 +70,7 @@ public class Projectile implements Unit {
 				(int) target.imageXPos + 72, (int) target.imageYPos + 72);
 		pRect = new Rect((int) x, (int) y, (int) x + image.getWidth(), (int) y
 				+ image.getHeight());
-		if (pRect.intersect(tRect)) {
+		if (tRect.contains(pRect)) {
 			hasHitTarget = true;
 			target.takeDamage(damage);
 			return true;

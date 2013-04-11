@@ -28,5 +28,11 @@ public class NormalTower extends Tower {
 	@Override
 	protected void doTowerSpecificChanges() {
 		attackspeed -= 0.1f;
+		damage ++;
+	}
+	
+	@Override
+	public void attack(Creep target) {
+		projectiles.add(new NormalTowerProjectile(game, target, this, x, y));
 	}
 }

@@ -15,7 +15,8 @@ public class Tower implements Unit {
 	protected Bitmap currentImage, projectileImage;
 	protected Game game;
 	protected World world;
-	private ArrayList<Projectile> projectiles;
+	private ArrayList<AreaOfEffect> effects;
+	protected ArrayList<Projectile> projectiles;
 	protected float lastAttackTime;
 	public float attackspeed;
 	private boolean sold;
@@ -28,8 +29,8 @@ public class Tower implements Unit {
 		lastAttackTime = 0f;
 		level = 1;
 		projectiles = new ArrayList<Projectile>();
+		effects = new ArrayList<AreaOfEffect>();
 		sold = false;
-		projectileSpeed = 1;
 	}
 
 	public int getPrice() {
@@ -41,7 +42,7 @@ public class Tower implements Unit {
 	}
 
 	public void sell() {
-		world.addGold((int) (price * 0.5));
+		world.addGold(sellPrice());
 		sold = true;
 		world.map.setFree(x, y);
 	}
@@ -54,7 +55,6 @@ public class Tower implements Unit {
 				level++;
 				currentImage = game.imageRepository
 						.getTowerImage(imageNames[level - 1]);
-				damage += (int) (0.5 * damage);
 				doTowerSpecificChanges();
 			}
 		}
@@ -65,7 +65,7 @@ public class Tower implements Unit {
 	}
 
 	public int sellPrice() {
-		return (int) (0.25 * price);
+		return (int) (0.75 * price);
 	}
 
 	public boolean isUpgradable() {
@@ -80,11 +80,15 @@ public class Tower implements Unit {
 		for (int i = 0; i < projectiles.size(); i++) {
 			projectiles.get(i).render(deltaTime);
 		}
+		for (int i = 0; i< effects.size(); i++) {
+			effects.get(i).render(deltaTime);
+		}
 	}
-
-	public Projectile attack(Creep target) {
-		return new Projectile(game, target, projectileImage, this, x, y,
-				projectileSpeed, damage);
+	protected void addEffect(AreaOfEffect aoe) {
+		effects.add(aoe);
+	}
+	public void attack(Creep target) {
+		projectiles.add(new Projectile(game, target, projectileImage, this, x, y, projectileSpeed, damage));
 	}
 
 	public void findTarget() {
@@ -94,8 +98,8 @@ public class Tower implements Unit {
 					&& creeps.get(i).xPos >= x - range
 					&& creeps.get(i).yPos <= y + range
 					&& creeps.get(i).yPos >= y - range) {
-
-				projectiles.add(attack(creeps.get(i)));
+				
+				attack(creeps.get(i));
 				return;
 			}
 		}
@@ -103,6 +107,9 @@ public class Tower implements Unit {
 
 	public boolean isSold() {
 		return sold;
+	}
+	public void doTowerEffect(Projectile p) {
+		
 	}
 
 	@Override
@@ -116,10 +123,18 @@ public class Tower implements Unit {
 		for (int i = 0; i < projectiles.size(); i++) {
 			projectiles.get(i).hitTarget();
 			if (projectiles.get(i).hasHitTarget()) {
+				doTowerEffect(projectiles.get(i));
 				projectiles.remove(i);
 				continue;
 			}
 			projectiles.get(i).update(deltaTime);
+		}
+		for (int i = 0; i < effects.size(); i++) {
+			if (effects.get(i).isDone()) {
+				effects.remove(i);
+			} else {
+				effects.get(i).update(deltaTime);
+			}
 		}
 	}
 

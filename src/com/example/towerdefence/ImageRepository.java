@@ -8,6 +8,7 @@ import android.util.Log;
 public class ImageRepository {
 	private ArrayList<Bitmap> creepImages, towerImages;
 	private ArrayList<String> creepNames, towerNames;
+	public Bitmap healthBar;
 	private Game game;
 
 	public ImageRepository(Game game) {
@@ -25,6 +26,21 @@ public class ImageRepository {
 		loadZealot();
 		loadNormalTower();
 		loadFrostTower();
+		loadFireTower();
+		healthBar = game.loadBitmap("creeps/healthBar.png");
+	}
+
+	private void loadFireTower() {
+		towerNames.add("towers/fire/fireTower.png");
+		towerImages.add(game.loadBitmap("towers/fire/fireTower.png"));
+		towerNames.add("towers/fire/fireTower2.png");
+		towerImages.add(game.loadBitmap("towers/fire/fireTower2.png"));
+		towerNames.add("towers/fire/fireTower3.png");
+		towerImages.add(game.loadBitmap("towers/fire/fireTower3.png"));
+		towerNames.add("towers/fire/fireTowerProjectile.png");
+		towerImages.add(game.loadBitmap("towers/fire/fireTowerProjectile.png"));
+		towerNames.add("towers/fire/fireTowerProjectile2.png");
+		towerImages.add(game.loadBitmap("towers/fire/fireTowerProjectile2.png"));
 	}
 
 	private void loadFrostTower() {

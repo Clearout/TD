@@ -27,8 +27,8 @@ public class AreaOfEffect implements Unit {
 
 	@Override
 	public void render(float deltaTime) {
-		game.drawBitmap(activeImage, x * 72 + 36 - activeImage.getWidth() / 2,
-				y * 72 + 36 - activeImage.getHeight() / 2 + 108);
+		game.drawBitmap(activeImage, x + 36 - activeImage.getWidth() / 2, y
+				+ 36 - activeImage.getHeight() / 2);
 	}
 
 	@Override
@@ -40,12 +40,13 @@ public class AreaOfEffect implements Unit {
 		}
 		for (int i = 0; i < world.creeps.size(); i++) {
 			Creep c = world.creeps.get(i);
-			if (c.imageXPos > x * 72 - activeImage.getWidth() / 2
-					&& c.imageYPos > y * 72 - activeImage.getHeight() / 2 + 108
-					&& c.imageXPos < x * 72 + activeImage.getWidth() / 2
-					&& c.imageYPos < y * 72 + activeImage.getHeight() / 2 + 108) {
+			if (c.imageXPos > x - activeImage.getWidth() / 2
+					&& c.imageYPos > y - activeImage.getHeight() / 2 + 108
+					&& c.imageXPos < x + activeImage.getWidth() / 2
+					&& c.imageYPos < y + activeImage.getHeight() / 2 + 108) {
 				doEffect(c);
 			}
+
 		}
 	}
 
