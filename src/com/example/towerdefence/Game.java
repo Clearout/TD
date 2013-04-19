@@ -135,7 +135,9 @@ public abstract class Game extends Activity implements Runnable {
 
 	public long oneSecond = 1000000000;
 	public ImageRepository imageRepository;
+	public SoundRepository soundRepository;
 	public Score scores;
+	public float soundVolume, musicVolume;
 
 	/**
 	 * Implementation of the Activity's onCreate() method. Sets up the
@@ -151,7 +153,6 @@ public abstract class Game extends Activity implements Runnable {
 		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wakeLock = powerManager
 				.newWakeLock(PowerManager.FULL_WAKE_LOCK, "Game");
-
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -181,7 +182,10 @@ public abstract class Game extends Activity implements Runnable {
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		this.soundPool = new SoundPool(20, AudioManager.STREAM_MUSIC, 0);
 		imageRepository = new ImageRepository(this);
+		soundRepository = new SoundRepository(this);
 		scores = new Score(this);
+		soundVolume = 1.0f;
+		musicVolume = 0.7f;
 		screen = createStartScreen();
 	}
 

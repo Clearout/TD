@@ -11,7 +11,8 @@ public class ImpCreep extends Creep {
 	public ImpCreep(Game game, World world, Map map, int life, int goldReward,
 			float movespeed) {
 		super(game, world, map, life, goldReward, movespeed);
-
+		sound = game.soundRepository.imp;
+		
 		down[0] = "creeps/imp/impDown.png";
 		down[1] = "creeps/imp/impDownL.png";
 		down[2] = "creeps/imp/impDown.png";

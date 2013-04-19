@@ -9,7 +9,8 @@ public class HoundCreep extends Creep {
 	public HoundCreep(Game game, World world, Map map, int life,
 			int goldReward, float movespeed) {
 		super(game, world, map, (int) (life * 0.6), goldReward * 2, (int)(movespeed * 1.8));
-
+		sound = game.soundRepository.hound;
+		
 		down[0] = "creeps/hound/houndDownL.png";
 		down[1] = "creeps/hound/houndDownR.png";
 		down[2] = "creeps/hound/houndDownL.png";

@@ -23,6 +23,7 @@ public class NormalTower extends Tower {
 		range = 2;
 		maxLevel = 3;
 		projectileSpeed = 8;
+		sound = game.soundRepository.normalTower;
 	}
 	
 	@Override

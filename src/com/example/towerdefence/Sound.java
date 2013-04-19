@@ -15,6 +15,22 @@ public class Sound {
 		soundPool.play(soundId, volume, volume, 0, 0, 1);
 	}
 	
+	public void loop(float volume) {
+		soundPool.play(soundId, volume, volume, 0, -1, 1);
+	}
+	
+	public void setVolume(float volume) {
+		soundPool.setVolume(soundId, volume, volume);
+	}
+	
+	public void stop() {
+		soundPool.stop(soundId);
+	}
+	
+	public void pause() {
+		soundPool.pause(soundId);
+	}
+	
 	public void dispose() {
 		soundPool.unload(soundId);
 	}

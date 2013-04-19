@@ -23,6 +23,7 @@ public class FrostTower extends Tower {
 		maxLevel = 3;
 		slow = 0.6f;
 		duration = 0.4f;
+		sound = game.soundRepository.frostTower;
 	}
 
 	@Override
