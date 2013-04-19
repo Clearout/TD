@@ -26,6 +26,7 @@ import touch.SingleTouchHandler;
 import touch.TouchEvent;
 import touch.TouchEventPool;
 import touch.TouchHandler;
+import ui.Screen;
 
 import android.app.Activity;
 import android.content.Context;
@@ -134,6 +135,7 @@ public abstract class Game extends Activity implements Runnable {
 
 	public long oneSecond = 1000000000;
 	public ImageRepository imageRepository;
+	public Score scores;
 
 	/**
 	 * Implementation of the Activity's onCreate() method. Sets up the
@@ -179,6 +181,7 @@ public abstract class Game extends Activity implements Runnable {
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		this.soundPool = new SoundPool(20, AudioManager.STREAM_MUSIC, 0);
 		imageRepository = new ImageRepository(this);
+		scores = new Score(this);
 		screen = createStartScreen();
 	}
 
@@ -593,5 +596,12 @@ public abstract class Game extends Activity implements Runnable {
 	public List<TouchEvent> getTouchEvents() {
 		return touchEvents;
 	}
+	@Override
+	public void onStop() {
+		super.onStop();
+		scores.saveScores();
+	}
+	
+	
 
 }

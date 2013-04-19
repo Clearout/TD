@@ -1,4 +1,6 @@
-package com.example.towerdefence;
+package ui;
+
+import com.example.towerdefence.Game;
 
 public abstract class Screen {
 	protected final Game game;

@@ -28,7 +28,7 @@ public class Creep implements Mover, Unit {
 	private float lastTime, lastMoveTime, effectTimeLeft;
 	private Map map;
 	private Path path;
-	private boolean dead;
+	private boolean dead, firstMove;
 	private World world;
 
 	public Creep() {
@@ -44,8 +44,12 @@ public class Creep implements Mover, Unit {
 		xPos = map.enterNode.x;
 		yPos = map.enterNode.y;
 		prevX = xPos;
-		prevY = yPos - 1;
+		prevY = yPos;
+		imageXPos = xPos * 72;
+		imageYPos = yPos * 72 + 108;
 		this.life = life;
+		if (life == 0)
+			life++;
 		this.goldReward = goldReward;
 		fullLife = life;
 		this.game = game;
@@ -53,6 +57,7 @@ public class Creep implements Mover, Unit {
 		lastTime = 0;
 		this.movespeed = movespeed;
 		speedEffect = 1;
+		firstMove = true;
 		lastXOffset = 0;
 		lastYOffset = 0;
 		this.map = map;
@@ -97,7 +102,7 @@ public class Creep implements Mover, Unit {
 	}
 
 	public void drawHealthBar() {
-		double lifePercent = (double)life/(double)fullLife;
+		double lifePercent = (double) life / (double) fullLife;
 		int width = (int) (lifePercent * healthBar.getWidth());
 		game.drawBitmap(healthBar, (int) imageXPos, (int) imageYPos, 0, 0,
 				width, healthBar.getHeight());
@@ -112,13 +117,16 @@ public class Creep implements Mover, Unit {
 	public void render(float deltaTime) {
 		game.drawBitmap(activeImage, calcImgXPos(deltaTime * speedEffect),
 				calcImgYPos(deltaTime * speedEffect));
-		drawHealthBar();
 		animate(deltaTime * speedEffect);
+
+		drawHealthBar();
+
 	}
 
 	public void move(float deltaTime) {
 		lastMoveTime += deltaTime;
 		if (lastMoveTime > 72 / movespeed) {
+			firstMove = false;
 			move();
 			lastMoveTime = 0;
 		}
@@ -177,7 +185,7 @@ public class Creep implements Mover, Unit {
 	}
 
 	private int getScore() {
-		return (int) (5 * life + movespeed + 3 * goldReward);
+		return (int) (5 * life + movespeed + 30 * goldReward);
 	}
 
 	public void takeDamage(int damage) {
@@ -203,6 +211,10 @@ public class Creep implements Mover, Unit {
 	@Override
 	public void update(float deltaTime) {
 		move(deltaTime * speedEffect);
+		if (firstMove)  {
+			move();
+			firstMove = false;
+		}
 		effectTimeLeft -= deltaTime;
 		if (effectTimeLeft <= 0)
 			removeEffect();

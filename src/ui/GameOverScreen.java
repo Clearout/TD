@@ -1,45 +1,57 @@
 package ui;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 
 import com.example.towerdefence.Game;
-import com.example.towerdefence.Screen;
 
 public class GameOverScreen extends Screen {
-	private Bitmap background, retry, menu;
-	private int lastLevel;
+	private Button retry, menu;
+	private Bitmap background;
+	private int lastLevel, score, textWidth;
+	private Paint p;
 
-	public GameOverScreen(Game game, int lastLevel) {
+	public GameOverScreen(Game game, int lastLevel, int score, boolean gameWon) {
 		super(game);
 		this.lastLevel = lastLevel;
-		background = game.loadBitmap("menu/gameOverBackground.png");
-		retry = game.loadBitmap("menu/retryButton.png");
-		menu = game.loadBitmap("menu/menuButton.png");
+		this.score = score;
+		game.scores.addScore(score, lastLevel);
+		if (gameWon)
+			background = game.loadBitmap("menu/gameFinishedBackground.png");
+		else
+			background = game.loadBitmap("menu/gameOverBackground.png");
+		retry = new Button(game, "menu/retryButton.png", 120, 1280 / 2);
+		menu = new Button(game, "menu/menuButton.png", 120,
+				1280 / 2 + retry.h() + 100);
+		p = new Paint();
+		p.setTypeface(Typeface.DEFAULT_BOLD);
+		p.setTextSize(80);
+		textWidth = (int) p.measureText("Score: " + score);
 	}
 
 	public void update(float deltatime) {
 		game.drawBitmap(background, 0, 0);
-		game.drawBitmap(retry, 120, 1280 / 2);
-		game.drawBitmap(menu, 120, 1280 / 2 + retry.getHeight() + 100);
+		retry.draw();
+		menu.draw();
+		game.drawText(p.getTypeface(), "Score: " + score,
+				720 / 2 - (int) (textWidth / 2), 500, Color.BLACK,
+				(int) p.getTextSize());
 		retry();
 		menu();
 	}
 
 	private void menu() {
-		if (game.getTouchX(0) > 120
-				&& game.getTouchX(0) < 120 + menu.getWidth()
-				&& game.getTouchY(0) > 1280 / 2 + 100 + retry.getHeight()
-				&& game.getTouchY(0) < 1280 / 2 + 100 + retry.getHeight()
-						+ menu.getHeight()) {
+		if (menu.touched()) {
+			dispose();
 			game.setScreen(new MainMenuScreen(game));
 		}
 	}
 
 	private void retry() {
-		if (game.getTouchX(0) > 120
-				&& game.getTouchX(0) < 120 + retry.getWidth()
-				&& game.getTouchY(0) > 1280 / 2
-				&& game.getTouchY(0) < 1280 / 2 + retry.getHeight()) {
+		if (retry.touched()) {
+			dispose();
 			game.setScreen(new GameScreen(game, lastLevel));
 		}
 	}
@@ -51,6 +63,7 @@ public class GameOverScreen extends Screen {
 	}
 
 	public void dispose() {
+
 	}
 
 }

@@ -28,7 +28,7 @@ public class NormalTower extends Tower {
 	@Override
 	protected void doTowerSpecificChanges() {
 		attackspeed -= 0.1f;
-		damage ++;
+		damage *= 2;
 	}
 	
 	@Override

@@ -24,19 +24,23 @@ public class World {
 	public World(Game game, int levelNum) {
 		this.game = game;
 		levelCounter = levelNum;
-		level = new Level(game, this, levelCounter, true);
+		boolean isSurvival = false;
+		if (levelNum == -1)
+			isSurvival = true;
+		level = new Level(game, this, levelCounter, isSurvival);
 		currentBackground = level.getBackground();
 		map = level.getMap();
 		creeps = new ArrayList<Creep>();
 		towers = new ArrayList<Tower>();
 		life = 20;
 		gold = 50;
+		score = 0;
 	}
 
 	public void update(float deltaTime) {
 		if (level.levelComplete() == true) {
 			if (creeps.size() == 0)
-				nextLevel();
+				game.setScreen(new GameOverScreen(game, levelCounter, score, true));
 		} else {
 			level.update(deltaTime);
 		}
@@ -66,19 +70,6 @@ public class World {
 		this.gold += gold;
 	}
 
-	private void nextLevel() {
-
-		// game.setScreen(new MainMenuScreen(game));
-
-		levelCounter++;
-		level = new Level(game, this, levelCounter, false);
-		currentBackground = level.getBackground();
-		towers.clear();
-		creeps.clear();
-		life = 20;
-		gold = 0;
-	}
-
 	public void addTower(Tower tower) {
 		towers.add(tower);
 	}
@@ -90,7 +81,7 @@ public class World {
 	}
 
 	public void gameOver() {
-		game.setScreen(new GameOverScreen(game, getLevelNumber()));
+		game.setScreen(new GameOverScreen(game, getLevelNumber(), score, false));
 	}
 
 	public void addScore(int score) {

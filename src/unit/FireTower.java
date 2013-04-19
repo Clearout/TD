@@ -16,9 +16,9 @@ public class FireTower extends Tower {
 		currentImage = game.imageRepository.getTowerImage(imageNames[0]);
 		projectileImage = game.imageRepository
 				.getTowerImage("towers/fire/fireTowerProjectile.png");
-		damage = 10;
+		damage = 5;
 		price = 50;
-		range = 3;
+		range = 2;
 		maxLevel = 3;
 		projectileSpeed = 5;
 	}
@@ -26,7 +26,6 @@ public class FireTower extends Tower {
 	@Override
 	public void doTowerSpecificChanges() {
 		damage += 5;
-		range++;
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import world.Renderer;
 import world.World;
 
 import com.example.towerdefence.Game;
-import com.example.towerdefence.Screen;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -28,7 +27,7 @@ public class GameScreen extends Screen {
 	private Button playPause, fastForward, menu;
 	private Icon backIcon, upgradeIcon, sellIcon, disabledUpgradeIcon,
 			onUpgradeIcon;
-	State state = State.Running;
+	State state = State.Paused;
 	private int coinArea, heartArea, manArea, bottomBarSeparator;
 	private World world;
 	private Renderer renderer;
@@ -122,6 +121,7 @@ public class GameScreen extends Screen {
 
 		lastTouch = 0;
 		touchDelay = false;
+		pause();
 	}
 
 	public void update(float deltaTime) {
@@ -135,6 +135,8 @@ public class GameScreen extends Screen {
 				world.map.enterNode.y * 72 + 108);
 		game.drawBitmap(exitArea, world.map.exitNode.x * 72,
 				world.map.exitNode.y * 72 + 108);
+		world.update(deltaTime * timeSpeed);
+		renderer.render(deltaTime * timeSpeed);
 		if (inIngameMenu) {
 
 			renderer.render(0);
@@ -150,8 +152,7 @@ public class GameScreen extends Screen {
 			}
 			outsidePressed();
 		} else {
-			world.update(deltaTime * timeSpeed);
-			renderer.render(deltaTime * timeSpeed);
+			
 			gridPressed();
 		}
 		// Drawing background and bars

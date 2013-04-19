@@ -8,7 +8,7 @@ import com.example.towerdefence.Game;
 public class HoundCreep extends Creep {
 	public HoundCreep(Game game, World world, Map map, int life,
 			int goldReward, float movespeed) {
-		super(game, world, map, (int) (life * 0.7), goldReward, movespeed * 2);
+		super(game, world, map, (int) (life * 0.6), goldReward * 2, (int)(movespeed * 1.8));
 
 		down[0] = "creeps/hound/houndDownL.png";
 		down[1] = "creeps/hound/houndDownR.png";
