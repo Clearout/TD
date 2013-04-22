@@ -6,12 +6,12 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.example.towerdefence.Game;
+import com.example.towerdefence.SoundRepository;
 
 public class ImpCreep extends Creep {
 	public ImpCreep(Game game, World world, Map map, int life, int goldReward,
 			float movespeed) {
 		super(game, world, map, life, goldReward, movespeed);
-		sound = game.soundRepository.imp;
 		
 		down[0] = "creeps/imp/impDown.png";
 		down[1] = "creeps/imp/impDownL.png";
@@ -35,5 +35,11 @@ public class ImpCreep extends Creep {
 		
 		activeImage = game.imageRepository.getCreepImage(down[0]);
 		chooseImageSet();
+	}
+	
+	@Override
+	public void die() {
+		super.die();
+		SoundRepository.imp.play(game.soundVolume);
 	}
 }

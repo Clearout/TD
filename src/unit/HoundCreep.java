@@ -4,12 +4,12 @@ import world.Map;
 import world.World;
 
 import com.example.towerdefence.Game;
+import com.example.towerdefence.SoundRepository;
 
 public class HoundCreep extends Creep {
 	public HoundCreep(Game game, World world, Map map, int life,
 			int goldReward, float movespeed) {
 		super(game, world, map, (int) (life * 0.6), goldReward * 2, (int)(movespeed * 1.8));
-		sound = game.soundRepository.hound;
 		
 		down[0] = "creeps/hound/houndDownL.png";
 		down[1] = "creeps/hound/houndDownR.png";
@@ -33,5 +33,10 @@ public class HoundCreep extends Creep {
 
 		activeImage = game.imageRepository.getCreepImage(down[0]);
 		chooseImageSet();
+	}
+	@Override
+	public void die() {
+		super.die();
+		SoundRepository.hound.play(game.soundVolume);
 	}
 }

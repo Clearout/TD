@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.example.towerdefence.Game;
+import com.example.towerdefence.SoundRepository;
 
 public class NormalTower extends Tower {
 
@@ -18,12 +19,11 @@ public class NormalTower extends Tower {
 		currentImage = game.imageRepository.getTowerImage(imageNames[0]);
 		projectileImage = game.imageRepository
 				.getTowerImage("towers/normal/normalTowerProjectile.png");
-		damage = 2;
+		damage = 1;
 		price = 5;
 		range = 2;
 		maxLevel = 3;
 		projectileSpeed = 8;
-		sound = game.soundRepository.normalTower;
 	}
 	
 	@Override
@@ -35,5 +35,6 @@ public class NormalTower extends Tower {
 	@Override
 	public void attack(Creep target) {
 		projectiles.add(new NormalTowerProjectile(game, target, this, x, y));
+		SoundRepository.normalTower.play(game.soundVolume);
 	}
 }

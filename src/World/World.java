@@ -39,8 +39,9 @@ public class World {
 
 	public void update(float deltaTime) {
 		if (level.levelComplete() == true) {
-			if (creeps.size() == 0)
+			if (creeps.size() == 0) {
 				game.setScreen(new GameOverScreen(game, levelCounter, score, true));
+			}
 		} else {
 			level.update(deltaTime);
 		}

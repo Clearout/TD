@@ -4,9 +4,9 @@ import world.World;
 
 import com.example.towerdefence.Game;
 import com.example.towerdefence.Sound;
+import com.example.towerdefence.SoundRepository;
 
 public class FireTower extends Tower {
-	private Sound explosion;
 	
 	public FireTower(Game game, World controller, int x, int y) {
 		super(game, controller, x, y);
@@ -23,8 +23,6 @@ public class FireTower extends Tower {
 		range = 2;
 		maxLevel = 3;
 		projectileSpeed = 5;
-		sound = game.soundRepository.fireTower;
-		explosion = game.soundRepository.explosion;
 	}
 
 	@Override
@@ -36,7 +34,7 @@ public class FireTower extends Tower {
 	public void doTowerEffect(Projectile p) {
 		addEffect(new FireEffect(game, world, this, (int) p.x
 				- p.image.getWidth() / 2, (int) p.y - p.image.getHeight() / 2));
-		explosion.play(game.soundVolume);
+		SoundRepository.explosion.play(game.soundVolume);
 		
 	}
 
@@ -44,5 +42,6 @@ public class FireTower extends Tower {
 	public void attack(Creep target) {
 		projectiles.add(new FireProjectile(game, target, projectileImage, this,
 				x, y, projectileSpeed, damage));
+		SoundRepository.fireTower.play(game.soundVolume);
 	}
 }

@@ -25,13 +25,12 @@ public class Creep implements Mover, Unit {
 	public Bitmap activeImage;
 	public Bitmap healthBar;
 	public Direction direction;
-	private Game game;
+	protected Game game;
 	private float lastTime, lastMoveTime, effectTimeLeft;
 	private Map map;
 	private Path path;
 	private boolean dead, firstMove;
 	private World world;
-	protected Sound sound;
 
 	public Creep() {
 	}
@@ -69,7 +68,6 @@ public class Creep implements Mover, Unit {
 		direction = Direction.South;
 		effectTimeLeft = 0;
 		healthBar = game.imageRepository.healthBar;
-		sound = null;
 	}
 
 	public void animate(float deltaTime) {
@@ -200,7 +198,6 @@ public class Creep implements Mover, Unit {
 	public void die() {
 		dead = true;
 		world.addScore(getScore());
-		sound.play(game.soundVolume);
 	}
 
 	public boolean isDead() {

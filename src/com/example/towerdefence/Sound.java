@@ -15,6 +15,10 @@ public class Sound {
 		soundPool.play(soundId, volume, volume, 0, 0, 1);
 	}
 	
+	public void play(float volume, int priority) {
+		soundPool.play(soundId, volume, volume, priority, 0, 1);
+	}
+	
 	public void loop(float volume) {
 		soundPool.play(soundId, volume, volume, 0, -1, 1);
 	}

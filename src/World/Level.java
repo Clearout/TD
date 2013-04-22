@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.example.towerdefence.Game;
 import com.example.towerdefence.Sound;
+import com.example.towerdefence.SoundRepository;
 
 public class Level {
 	private ArrayList<Wave> waves;
@@ -23,8 +24,6 @@ public class Level {
 	private Bitmap background;
 	public int waveNumber, life, reward, movespeed, creepAmount, musicCounter;
 	private Bitmap[] backgrounds;
-	private Sound[] music;
-	private Sound activeMusic;
 
 	public Level(Game game, World world, int level, boolean infiniteLevel) {
 		this.game = game;
@@ -46,12 +45,6 @@ public class Level {
 		backgrounds[2] = game.loadBitmap("maps/rocks.png");
 		backgrounds[3] = game.loadBitmap("maps/marble.png");
 		background = backgrounds[0];
-		music = new Sound[3];
-		music[0] = game.soundRepository.battle;
-		music[1] = game.soundRepository.epic;
-		music[2] = game.soundRepository.resistance;
-		activeMusic = music[0];
-		musicCounter = 0;
 		generateLevel(level);
 	}
 
@@ -93,9 +86,7 @@ public class Level {
 			time = 1.6f;
 			waves.add(new Wave(new ArrayList<Creep>(), 1));
 			waveNumber = 0;
-			background = backgrounds[1];
-			activeMusic = music[(int)(Math.random()*3)];
-			activeMusic.play(game.musicVolume);
+			background = backgrounds[(int)(Math.random()*4)];
 			newWave();
 		} else {
 			if (level == 1) {
@@ -106,8 +97,6 @@ public class Level {
 				movespeed = 50;
 				creepAmount = 5;
 				time = 1f;
-				activeMusic = music[0];
-				activeMusic.play(game.musicVolume);
 				for (int i = 0; i < 20; i++) {
 					ArrayList<Creep> creeps = new ArrayList<Creep>();
 					
@@ -121,7 +110,7 @@ public class Level {
 							creeps.add(new ZealotCreep(game, world, map, life,
 									reward, movespeed));
 					}
-					life++;
+					life += 2 + (int)(i/3);
 					movespeed += 3;
 					time -= 0.032;
 					creepAmount++;
@@ -135,8 +124,6 @@ public class Level {
 				movespeed = 50;
 				creepAmount = 8;
 				time = 1f;
-				activeMusic = music[1];
-				activeMusic.play(game.musicVolume);
 				for (int i = 0; i < 20; i++) {
 					ArrayList<Creep> creeps = new ArrayList<Creep>();
 					for (int j = 0; j < creepAmount; j++) {
@@ -149,7 +136,7 @@ public class Level {
 							creeps.add(new ZealotCreep(game, world, map, life,
 									reward, movespeed));
 					}
-					life+= 1 + (int)(i/6);
+					life+= 2 + (int)(i/3) + (int)(i/4);
 					movespeed += 3;
 					time -= 0.032;
 					creepAmount++;
@@ -164,8 +151,6 @@ public class Level {
 				movespeed = 50;
 				creepAmount = 10;
 				time = 1f;
-				activeMusic = music[2];
-				activeMusic.play(game.musicVolume);
 				for (int i = 0; i < 20; i++) {
 					ArrayList<Creep> creeps = new ArrayList<Creep>();
 
@@ -179,7 +164,7 @@ public class Level {
 							creeps.add(new ZealotCreep(game, world, map, life,
 									reward, movespeed));
 					}
-					life += 1 + (int) (i / 4);
+					life += 1 + (int) (i / 4) + (int)(i/2);
 					movespeed += 3;
 					time -= 0.032;
 					creepAmount++;

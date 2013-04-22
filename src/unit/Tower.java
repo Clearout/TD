@@ -21,8 +21,7 @@ public class Tower implements Unit {
 	protected float lastAttackTime;
 	public float attackspeed;
 	private boolean sold;
-	protected Sound sound;
-
+	
 	public Tower(Game game, World controller, int x, int y) {
 		this.game = game;
 		this.world = controller;
@@ -33,7 +32,6 @@ public class Tower implements Unit {
 		projectiles = new ArrayList<Projectile>();
 		effects = new ArrayList<AreaOfEffect>();
 		sold = false;
-		sound = null;
 	}
 
 	public int getPrice() {
@@ -92,7 +90,6 @@ public class Tower implements Unit {
 	}
 	public void attack(Creep target) {
 		projectiles.add(new Projectile(game, target, projectileImage, this, x, y, projectileSpeed, damage));
-		sound.play(game.soundVolume);
 	}
 
 	public void findTarget() {
