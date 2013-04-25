@@ -1,15 +1,11 @@
 package unit;
 
 import com.example.towerdefence.Game;
-import com.example.towerdefence.Sound;
-
 import pathfinder.Mover;
 import pathfinder.Path;
-import pathfinder.Path.Step;
 import world.Map;
 import world.World;
 import android.graphics.Bitmap;
-import android.util.Log;
 
 public class Creep implements Mover, Unit {
 	enum Direction {
@@ -85,9 +81,7 @@ public class Creep implements Mover, Unit {
 			lastXOffset += movespeed * deltaTime;
 		if (direction == Direction.West)
 			lastXOffset -= movespeed * deltaTime;
-
 		imageXPos = prevX * 72 + lastXOffset;
-
 		return (int) imageXPos;
 	}
 
@@ -96,9 +90,7 @@ public class Creep implements Mover, Unit {
 			lastYOffset += movespeed * deltaTime;
 		if (direction == Direction.North)
 			lastYOffset -= movespeed * deltaTime;
-
 		imageYPos = prevY * 72 + 108 + lastYOffset;
-
 		return (int) imageYPos;
 	}
 
@@ -119,7 +111,6 @@ public class Creep implements Mover, Unit {
 		game.drawBitmap(activeImage, calcImgXPos(deltaTime * speedEffect),
 				calcImgYPos(deltaTime * speedEffect));
 		animate(deltaTime * speedEffect);
-
 		drawHealthBar();
 
 	}
@@ -135,7 +126,7 @@ public class Creep implements Mover, Unit {
 
 	public void move() {
 		if (xPos == map.exitNode.x && yPos == map.exitNode.y) {
-			die();
+			dead = true;
 			world.loseLife();
 		} else {
 			lastXOffset = 0;
@@ -186,7 +177,7 @@ public class Creep implements Mover, Unit {
 	}
 
 	private int getScore() {
-		return (int) (5 * life + movespeed + 30 * goldReward);
+		return (int) (5 * life + movespeed);
 	}
 
 	public void takeDamage(int damage) {

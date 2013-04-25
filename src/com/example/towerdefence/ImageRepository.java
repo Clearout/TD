@@ -3,7 +3,6 @@ package com.example.towerdefence;
 import java.util.ArrayList;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 public class ImageRepository {
 	private ArrayList<Bitmap> creepImages, towerImages;

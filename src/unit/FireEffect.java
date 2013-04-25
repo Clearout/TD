@@ -14,8 +14,8 @@ public class FireEffect extends AreaOfEffect {
 		imageNames[0] = "towers/fire/fireTowerProjectile.png";
 		imageNames[1] = "towers/fire/fireTowerProjectile2.png";
 		activeImage = game.imageRepository.getTowerImage(imageNames[0]);
-		range = (int) ((game.imageRepository.getTowerImage(imageNames[1])
-				.getWidth() / 2) / 72);
+		range = (game.imageRepository.getTowerImage(imageNames[1])
+				.getWidth() / 2) / 72;
 		speed = 0.4f;
 	}
 	

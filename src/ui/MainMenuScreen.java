@@ -3,7 +3,6 @@ package ui;
 import com.example.towerdefence.Game;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 public class MainMenuScreen extends Screen {
 	Button play, exit, highScores;
@@ -19,6 +18,7 @@ public class MainMenuScreen extends Screen {
 				450 + play.h() + 100);
 	}
 
+	@Override
 	public void update(float deltatime) {
 		game.drawBitmap(background, 0, 0);
 		play.draw();
@@ -55,12 +55,15 @@ public class MainMenuScreen extends Screen {
 		}
 	}
 
+	@Override
 	public void pause() {
 	}
 
+	@Override
 	public void resume() {
 	}
 
+	@Override
 	public void dispose() {
 	}
 

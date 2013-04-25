@@ -9,7 +9,7 @@ import com.example.towerdefence.SoundRepository;
 public class ZealotCreep extends Creep {
 	public ZealotCreep(Game game, World world, Map map, int life,
 			int goldReward, float movespeed) {
-		super(game, world, map, (int) (life * 5), goldReward * 4, movespeed / 4);
+		super(game, world, map, life * 5, goldReward * 4, movespeed / 4);
 		
 		down[0] = "creeps/zealot/zealotDown.png";
 		down[1] = "creeps/zealot/zealotDownL.png";

@@ -152,7 +152,8 @@ public class Music implements OnCompletionListener {
      * Sets the isPrepared flag to guarantee we are in proper states when
      * other {@link MediaPlayer} methods are called.
      */
-    public void onCompletion(MediaPlayer arg0) {
+    @Override
+	public void onCompletion(MediaPlayer arg0) {
         synchronized (this) {
             isPrepared = false;
         }

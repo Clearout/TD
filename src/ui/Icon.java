@@ -5,7 +5,6 @@ import unit.Tower;
 import com.example.towerdefence.Game;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 public class Icon {
 	private Bitmap image;

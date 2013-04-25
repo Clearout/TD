@@ -8,10 +8,7 @@ import unit.ImpCreep;
 import unit.ZealotCreep;
 
 import android.graphics.Bitmap;
-import android.util.Log;
-
 import com.example.towerdefence.Game;
-import com.example.towerdefence.Sound;
 import com.example.towerdefence.SoundRepository;
 
 public class Level {
@@ -45,6 +42,8 @@ public class Level {
 		backgrounds[2] = game.loadBitmap("maps/rocks.png");
 		backgrounds[3] = game.loadBitmap("maps/marble.png");
 		background = backgrounds[0];
+		SoundRepository.music.setLooping(true);
+		SoundRepository.music.play();
 		generateLevel(level);
 	}
 
@@ -110,7 +109,7 @@ public class Level {
 							creeps.add(new ZealotCreep(game, world, map, life,
 									reward, movespeed));
 					}
-					life += 2 + (int)(i/3);
+					life += 2 + i/3;
 					movespeed += 3;
 					time -= 0.032;
 					creepAmount++;
@@ -136,7 +135,7 @@ public class Level {
 							creeps.add(new ZealotCreep(game, world, map, life,
 									reward, movespeed));
 					}
-					life+= 2 + (int)(i/3) + (int)(i/4);
+					life+= 2 + i/3 + i/4;
 					movespeed += 3;
 					time -= 0.032;
 					creepAmount++;
@@ -164,7 +163,7 @@ public class Level {
 							creeps.add(new ZealotCreep(game, world, map, life,
 									reward, movespeed));
 					}
-					life += 1 + (int) (i / 4) + (int)(i/2);
+					life += 1 + i / 4 + i/2;
 					movespeed += 3;
 					time -= 0.032;
 					creepAmount++;
@@ -192,12 +191,12 @@ public class Level {
 				creeps.add(new ImpCreep(game, world, map, life, reward,
 						movespeed));
 			}
-			for (int i = 0; i < (int) (hardCreepRatio * (float) creepAmount); i++) {
+			for (int i = 0; i < (int) (hardCreepRatio * creepAmount); i++) {
 				int placement = (int) (Math.random() * (creeps.size() - 1));
 				creeps.add(placement, new ZealotCreep(game, world, map, life,
 						reward, movespeed));
 			}
-			for (int i = 0; i < (int) (fastCreepRatio * (float) creepAmount); i++) {
+			for (int i = 0; i < (int) (fastCreepRatio * creepAmount); i++) {
 				int placement = (int) (Math.random() * (creeps.size() - 1));
 				creeps.add(placement, new HoundCreep(game, world, map, life,
 						reward, movespeed));

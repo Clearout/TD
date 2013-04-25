@@ -3,12 +3,10 @@ package world;
 import java.util.ArrayList;
 
 import android.graphics.Bitmap;
-import android.util.Log;
-
 import com.example.towerdefence.Game;
+import com.example.towerdefence.SoundRepository;
 
 import ui.GameOverScreen;
-import ui.MainMenuScreen;
 import unit.Creep;
 import unit.Tower;
 
@@ -40,12 +38,13 @@ public class World {
 	public void update(float deltaTime) {
 		if (level.levelComplete() == true) {
 			if (creeps.size() == 0) {
-				game.setScreen(new GameOverScreen(game, levelCounter, score, true));
+				game.setScreen(new GameOverScreen(game, levelCounter, score,
+						true));
+				SoundRepository.music.stop();
 			}
 		} else {
 			level.update(deltaTime);
 		}
-
 		for (int i = 0; i < towers.size(); i++) {
 			towers.get(i).update(deltaTime);
 			if (towers.get(i).isSold())
@@ -83,6 +82,7 @@ public class World {
 
 	public void gameOver() {
 		game.setScreen(new GameOverScreen(game, getLevelNumber(), score, false));
+		SoundRepository.music.stop();
 	}
 
 	public void addScore(int score) {

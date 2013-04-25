@@ -1,11 +1,7 @@
 package unit;
 
 import world.World;
-import android.graphics.Bitmap;
-import android.util.Log;
-
 import com.example.towerdefence.Game;
-import com.example.towerdefence.SoundRepository;
 
 public class NormalTower extends Tower {
 
@@ -35,6 +31,5 @@ public class NormalTower extends Tower {
 	@Override
 	public void attack(Creep target) {
 		projectiles.add(new NormalTowerProjectile(game, target, this, x, y));
-		SoundRepository.normalTower.play(game.soundVolume);
 	}
 }

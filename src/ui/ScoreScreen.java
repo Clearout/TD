@@ -15,6 +15,7 @@ public class ScoreScreen extends Screen {
 	private String title;
 	private Paint p;
 	private Bitmap background;
+
 	public ScoreScreen(Game game, String title, ArrayList<Integer> scores) {
 		super(game);
 		this.title = title;
@@ -31,15 +32,18 @@ public class ScoreScreen extends Screen {
 	public void update(float deltatime) {
 		game.drawBitmap(background, 0, 0);
 		back.draw();
-		game.drawText(p.getTypeface(), title, 720/2 - (int)p.measureText(title), 50, p.getColor(), (int)p.getTextSize());
+		game.drawText(p.getTypeface(), title,
+				720 / 2 - (int) p.measureText(title), 50, p.getColor(),
+				(int) p.getTextSize());
 		String score;
-		
-		for (int i=0; i<10; i++) {
+
+		for (int i = 0; i < 10; i++) {
 			if (scores.get(i) == -1)
 				score = "" + 0;
 			else
 				score = "" + scores.get(i);
-			game.drawText(p.getTypeface(), (i+1) + ". " + score, 100, 180 + i*80, p.getColor(), (int)p.getTextSize());
+			game.drawText(p.getTypeface(), (i + 1) + ". " + score, 100,
+					180 + i * 80, p.getColor(), (int) p.getTextSize());
 		}
 		if (back.touched()) {
 			dispose();
@@ -50,13 +54,13 @@ public class ScoreScreen extends Screen {
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

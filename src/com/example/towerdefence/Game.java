@@ -22,7 +22,6 @@ import java.util.List;
 
 import touch.MultiTouchHandler;
 import touch.Pool;
-import touch.SingleTouchHandler;
 import touch.TouchEvent;
 import touch.TouchEventPool;
 import touch.TouchHandler;
@@ -42,7 +41,6 @@ import android.graphics.Typeface;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
@@ -135,6 +133,7 @@ public abstract class Game extends Activity implements Runnable {
 
 	public long oneSecond = 1000000000;
 	public ImageRepository imageRepository;
+	@SuppressWarnings("unused")
 	private SoundRepository sr;
 	public Score scores;
 	public float soundVolume;
@@ -148,6 +147,8 @@ public abstract class Game extends Activity implements Runnable {
 	 * calls the {@link GameByMe#createStartScreen()} method to fetch the first
 	 * Screen to be active.
 	 */
+	@SuppressWarnings("deprecation")
+	@Override
 	public void onCreate(Bundle instanceBundle) {
 		super.onCreate(instanceBundle);
 		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -166,7 +167,7 @@ public abstract class Game extends Activity implements Runnable {
 		} else {
 			setOffscreenSurface(720, 1280);
 		}
-		
+
 		surfaceView.setFocusableInTouchMode(true);
 		surfaceView.requestFocus();
 
@@ -180,7 +181,7 @@ public abstract class Game extends Activity implements Runnable {
 		touchHandler = new MultiTouchHandler(surfaceView, touchEventBuffer,
 				touchEventPool);
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		this.soundPool = new SoundPool(20, AudioManager.STREAM_MUSIC, 0);
+		this.soundPool = new SoundPool(100, AudioManager.STREAM_MUSIC, 0);
 		imageRepository = new ImageRepository(this);
 		scores = new Score(this);
 		sr = new SoundRepository(this);
@@ -199,6 +200,7 @@ public abstract class Game extends Activity implements Runnable {
 	 * (e.g. offscreen surface dimensions are not equal to SurfaceView
 	 * dimensions).
 	 */
+	@Override
 	public void run() {
 		int frames = 0;
 		long startTime = System.nanoTime();
@@ -268,7 +270,6 @@ public abstract class Game extends Activity implements Runnable {
 	 * that the handlers on the UI thread can't concurrently access them.
 	 */
 	private void fillEvents() {
-
 		synchronized (touchEventBuffer) {
 			for (int i = 0; i < touchEventBuffer.size(); i++) {
 				touchEvents.add(touchEventBuffer.get(i));
@@ -284,7 +285,6 @@ public abstract class Game extends Activity implements Runnable {
 	 * concurrently access the Pools.
 	 */
 	private void freeEvents() {
-
 		synchronized (touchEventBuffer) {
 			for (int i = 0; i < touchEvents.size(); i++) {
 				touchEventPool.free(touchEvents.get(i));
@@ -297,6 +297,7 @@ public abstract class Game extends Activity implements Runnable {
 	 * Implementation of the Activity onResume() method. Acquires the
 	 * {@link WakeLock} and starts the main loop thread.
 	 */
+	@Override
 	public void onResume() {
 		super.onResume();
 		wakeLock.acquire();
@@ -315,6 +316,7 @@ public abstract class Game extends Activity implements Runnable {
 	 * {@link SoundPool} and unregisters the Game from the {@link SensorManager}
 	 * in case the application is destroyed (isFinishing()).
 	 */
+	@Override
 	public void onPause() {
 		super.onPause();
 		wakeLock.release();
@@ -599,12 +601,11 @@ public abstract class Game extends Activity implements Runnable {
 	public List<TouchEvent> getTouchEvents() {
 		return touchEvents;
 	}
+
 	@Override
 	public void onStop() {
 		super.onStop();
 		scores.saveScores();
 	}
-	
-	
 
 }

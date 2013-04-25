@@ -1,12 +1,9 @@
 package unit;
 
-import java.util.Vector;
-
 import com.example.towerdefence.Game;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.util.Log;
 
 public class Projectile implements Unit {
 	protected Creep target;
@@ -48,6 +45,7 @@ public class Projectile implements Unit {
 		return target.imageXPos + 36;
 	}
 
+	@Override
 	public void update(float deltaTime) {
 
 		theta = (float) Math.atan2(

@@ -1,11 +1,8 @@
 package unit;
 
-import java.util.ArrayList;
-
 import world.World;
 
 import com.example.towerdefence.Game;
-import com.example.towerdefence.SoundRepository;
 
 public class FrostTower extends Tower {
 	private float slow, duration;
@@ -36,6 +33,5 @@ public class FrostTower extends Tower {
 	public void attack(Creep target) {
 		addEffect(new FrostEffect(game, world, x * 72, y * 72 + 108,
 				slow, duration));
-		SoundRepository.frostTower.play(game.soundVolume);
 	}
 }

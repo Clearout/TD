@@ -15,7 +15,7 @@ public class FrostEffect extends AreaOfEffect {
 		imageNames[3] = "towers/frost/frostTowerProjectile4.png";
 		imageNames[4] = "towers/frost/frostTowerProjectile5.png";
 		activeImage = game.imageRepository.getTowerImage(imageNames[0]);
-		range = (int)((game.imageRepository.getTowerImage(imageNames[4]).getWidth()/2)/72);
+		range = (game.imageRepository.getTowerImage(imageNames[4]).getWidth()/2)/72;
 		speed = 0.6f;
 		this.slow = slow;
 		this.duration = duration;

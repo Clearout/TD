@@ -60,7 +60,8 @@ public class SingleTouchHandler implements TouchHandler, OnTouchListener {
     /**
      * {@inheritDoc}
      */
-    public boolean isTouchDown(int pointer) {
+    @Override
+	public boolean isTouchDown(int pointer) {
         if(pointer != 0) return false;
         return isTouched;
     }
@@ -68,7 +69,8 @@ public class SingleTouchHandler implements TouchHandler, OnTouchListener {
     /**
      * {@inheritDoc}
      */
-    public int getTouchX(int pointer) {
+    @Override
+	public int getTouchX(int pointer) {
         if(pointer != 0) return 0;
         return touchX;
     }
@@ -76,7 +78,8 @@ public class SingleTouchHandler implements TouchHandler, OnTouchListener {
     /**
      * {@inheritDoc}
      */
-    public int getTouchY(int pointer) {
+    @Override
+	public int getTouchY(int pointer) {
         if(pointer != 0) return 0;
         return touchY;
     }

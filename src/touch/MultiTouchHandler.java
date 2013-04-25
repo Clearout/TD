@@ -74,6 +74,7 @@ public class MultiTouchHandler implements TouchHandler, OnTouchListener {
 	 * thread (when this method is called) and emptied on the main loop thread
 	 * in the {@link GameByMe#run} method (see {@link GameByMe#fillBuffers}).
 	 */
+	@Override
 	public synchronized boolean onTouch(View v, MotionEvent event) {
 		synchronized (touchEventBuffer) {
 			TouchEvent touchEvent = null;
@@ -133,6 +134,7 @@ public class MultiTouchHandler implements TouchHandler, OnTouchListener {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public synchronized boolean isTouchDown(int pointer) {
 		if (pointer < 0 || pointer >= 20)
 			return false;
@@ -143,6 +145,7 @@ public class MultiTouchHandler implements TouchHandler, OnTouchListener {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public synchronized int getTouchX(int pointer) {
 		if (pointer < 0 || pointer >= 20)
 			return 0;
@@ -153,6 +156,7 @@ public class MultiTouchHandler implements TouchHandler, OnTouchListener {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public synchronized int getTouchY(int pointer) {
 		if (pointer < 0 || pointer >= 20)
 			return 0;

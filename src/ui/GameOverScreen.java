@@ -31,12 +31,13 @@ public class GameOverScreen extends Screen {
 		textWidth = (int) p.measureText("Score: " + score);
 	}
 
+	@Override
 	public void update(float deltatime) {
 		game.drawBitmap(background, 0, 0);
 		retry.draw();
 		menu.draw();
 		game.drawText(p.getTypeface(), "Score: " + score,
-				720 / 2 - (int) (textWidth / 2), 500, Color.BLACK,
+				720 / 2 - textWidth / 2, 500, Color.BLACK,
 				(int) p.getTextSize());
 		retry();
 		menu();
@@ -56,12 +57,15 @@ public class GameOverScreen extends Screen {
 		}
 	}
 
+	@Override
 	public void pause() {
 	}
 
+	@Override
 	public void resume() {
 	}
 
+	@Override
 	public void dispose() {
 
 	}

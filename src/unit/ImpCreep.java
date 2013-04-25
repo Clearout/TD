@@ -2,9 +2,6 @@ package unit;
 
 import world.Map;
 import world.World;
-import android.graphics.Bitmap;
-import android.util.Log;
-
 import com.example.towerdefence.Game;
 import com.example.towerdefence.SoundRepository;
 

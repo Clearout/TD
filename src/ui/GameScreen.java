@@ -9,6 +9,7 @@ import world.Renderer;
 import world.World;
 
 import com.example.towerdefence.Game;
+import com.example.towerdefence.SoundRepository;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -21,13 +22,12 @@ public class GameScreen extends Screen {
 		Paused, Running, GameOver
 	}
 
-	private Bitmap background, bottomBar, topBar, man, heart, coin, buildBG,
-			startArea, exitArea;
+	private Bitmap background, bottomBar, topBar, man, heart, coin, buildBG;
 	private Bitmap[] ffButtons;
 	private Button playPause, fastForward, menu;
 	private Icon backIcon, upgradeIcon, sellIcon, disabledUpgradeIcon,
 			onUpgradeIcon;
-	State state = State.Paused;
+	State state = State.Running;
 	private int coinArea, heartArea, manArea, bottomBarSeparator;
 	private World world;
 	private Renderer renderer;
@@ -40,20 +40,19 @@ public class GameScreen extends Screen {
 		super(game);
 		timeSpeed = 1;
 		lastTimeSpeed = timeSpeed;
-		// initialize bitmaps
 		world = new World(game, levelNum);
-		renderer = new Renderer(world);
+		renderer = new Renderer(game, world);
 		background = world.getBackground();
 
+		// initialize bitmaps
 		bottomBar = game.loadBitmap("ui/bottomBar.png");
 		topBar = game.loadBitmap("ui/topBar.png");
 		coin = game.loadBitmap("ui/coin.png");
 		heart = game.loadBitmap("ui/heart.png");
 		man = game.loadBitmap("ui/man.png");
 		buildBG = game.loadBitmap("ui/transparentBuildMenuBackground.png");
-
-		startArea = game.loadBitmap("maps/startArea.png");
-		exitArea = game.loadBitmap("maps/exitArea.png");
+		
+		// Add icons
 		backIcon = new Icon(game, "ui/backIcon.png", 0, 0);
 		upgradeIcon = new Icon(game, "ui/upgradeIcon.png", 0, 0);
 		onUpgradeIcon = new Icon(game, "ui/upgradeIcon.png", 0, 0);
@@ -124,6 +123,7 @@ public class GameScreen extends Screen {
 		pause();
 	}
 
+	@Override
 	public void update(float deltaTime) {
 		lastTouch += deltaTime;
 		if (lastTouch > 0.3) {
@@ -131,15 +131,10 @@ public class GameScreen extends Screen {
 			lastTouch = 0;
 		}
 		game.drawBitmap(background, 0, topBar.getHeight() + 1);
-		game.drawBitmap(startArea, world.map.enterNode.x * 72,
-				world.map.enterNode.y * 72 + 108);
-		game.drawBitmap(exitArea, world.map.exitNode.x * 72,
-				world.map.exitNode.y * 72 + 108);
+
 		world.update(deltaTime * timeSpeed);
 		renderer.render(deltaTime * timeSpeed);
 		if (inIngameMenu) {
-
-			renderer.render(0);
 			game.drawBitmap(buildBG, 110, 400);
 			backIcon.draw();
 			backPressed();
@@ -152,14 +147,50 @@ public class GameScreen extends Screen {
 			}
 			outsidePressed();
 		} else {
-			
 			gridPressed();
 		}
-		// Drawing background and bars
-		game.drawBitmap(topBar, 0, 0);
+
 		game.drawBitmap(bottomBar, 0,
 				background.getHeight() + topBar.getHeight() + 1);
+		drawTopBar();
 
+		// Drawing buttons on the bottomBar
+		playPause.draw();
+		menu.draw();
+		fastForward.draw();
+		if (touchDelay == false) {
+
+			if (state == State.Paused) {
+				if (playPause.touched()) {
+					touchDelay = true;
+					ingameResume();
+				}
+			} else {
+				if (playPause.touched()) {
+					touchDelay = true;
+					pause();
+				}
+			}
+			if (menu.touched()) {
+				touchDelay = true;
+				game.setScreen(new MainMenuScreen(game));
+				SoundRepository.music.stop();
+				this.dispose();
+			} else if (fastForward.touched()) {
+				touchDelay = true;
+				if (timeSpeed != 0) {
+					timeSpeed++;
+					if (timeSpeed > 3)
+						timeSpeed = 1;
+
+					fastForward.setImg(ffButtons[(int) (timeSpeed - 1)]);
+				}
+			}
+		}
+	}
+
+	private void drawTopBar() {
+		game.drawBitmap(topBar, 0, 0);
 		// Drawing icons on the topBar
 		game.drawBitmap(coin, coinArea - coin.getWidth() - 22,
 				72 - coin.getHeight() / 2);
@@ -176,39 +207,6 @@ public class GameScreen extends Screen {
 		game.drawText(Typeface.DEFAULT, "" + world.getLevel().waveNumber,
 				coinArea + heartArea, 72 - man.getHeight() / 2 + 10,
 				Color.BLACK, 60);
-		// Drawing buttons on the bottomBar
-		playPause.draw();
-		menu.draw();
-		fastForward.draw();
-		if (touchDelay == false) {
-
-			if (state == State.Paused) {
-				if (playPause.touched()) {
-					touchDelay = true;
-					resume();
-				}
-			} else if (state == State.Running) {
-				if (playPause.touched()) {
-					touchDelay = true;
-					pause();
-				}
-			}
-			if (menu.touched()) {
-				touchDelay = true;
-				game.setScreen(new MainMenuScreen(game));
-				this.dispose();
-			}
-			if (fastForward.touched()) {
-				touchDelay = true;
-				if (timeSpeed != 0) {
-					timeSpeed++;
-					if (timeSpeed > 3)
-						timeSpeed = 1;
-
-					fastForward.setImg(ffButtons[(int) (timeSpeed - 1)]);
-				}
-			}
-		}
 	}
 
 	private void outsidePressed() {
@@ -370,7 +368,6 @@ public class GameScreen extends Screen {
 								checkAndSwapUpgradeIcons();
 								inIngameMenu = true;
 								buildMenuUp = false;
-								// If tile is already occupied by a tower
 							}
 						}
 					}
@@ -381,14 +378,19 @@ public class GameScreen extends Screen {
 
 	@Override
 	public void pause() {
-		state = State.Paused;
-		playPause.setImg(game.loadBitmap("ui/playButton.png"));
-		lastTimeSpeed = timeSpeed;
-		timeSpeed = 0;
+		if (state != State.Paused) {
+			state = State.Paused;
+			playPause.setImg(game.loadBitmap("ui/playButton.png"));
+			lastTimeSpeed = timeSpeed;
+			timeSpeed = 0;
+		}
 	}
 
 	@Override
 	public void resume() {
+	}
+
+	public void ingameResume() {
 		state = State.Running;
 		playPause.setImg(game.loadBitmap("ui/pauseButton.png"));
 		timeSpeed = lastTimeSpeed;

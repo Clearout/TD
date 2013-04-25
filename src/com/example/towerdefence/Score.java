@@ -2,7 +2,7 @@ package com.example.towerdefence;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 
 public class Score {
@@ -13,7 +13,7 @@ public class Score {
 	private SharedPreferences data;
 
 	public Score(Game game) {
-		data = game.getPreferences(Activity.MODE_PRIVATE);
+		data = game.getPreferences(Context.MODE_PRIVATE);
 
 		level1ScoresString = new ArrayList<String>();
 		level2ScoresString = new ArrayList<String>();

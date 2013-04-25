@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import world.World;
 
 import com.example.towerdefence.Game;
-import com.example.towerdefence.Sound;
-
 import android.graphics.Bitmap;
-import android.util.Log;
 
 public class Tower implements Unit {
 	public int x, y, damage, price, level, maxLevel, projectileSpeed, range;

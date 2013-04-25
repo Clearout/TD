@@ -64,6 +64,7 @@ public class AStarPathFinder implements PathFinder {
 	/**
 	 * @see PathFinder#findPath(Mover, int, int, int, int)
 	 */
+	@Override
 	public Path findPath(Mover mover, int sx, int sy, int tx, int ty) {
 		// easy first check, if the destination is blocked, we can't get there
 
@@ -420,6 +421,7 @@ public class AStarPathFinder implements PathFinder {
 		/**
 		 * @see Comparable#compareTo(Object)
 		 */
+		@Override
 		public int compareTo(Object other) {
 			Node o = (Node) other;
 			
