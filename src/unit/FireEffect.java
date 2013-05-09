@@ -3,6 +3,7 @@ package unit;
 import world.World;
 
 import com.example.towerdefence.Game;
+import com.example.towerdefence.SoundRepository;
 
 public class FireEffect extends AreaOfEffect {
 	private Tower t;
@@ -22,6 +23,7 @@ public class FireEffect extends AreaOfEffect {
 	@Override
 	public void doEffect(Creep c) {
 		c.takeDamage(t.damage);
+		SoundRepository.explosion.play(game.soundVolume);
 	}
 
 }

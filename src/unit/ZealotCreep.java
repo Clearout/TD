@@ -38,6 +38,6 @@ public class ZealotCreep extends Creep {
 	@Override
 	public void die() {
 		super.die();
-		SoundRepository.zealot.play(game.soundVolume);
+		SoundRepository.zealot.play(game.soundVolume*0.6f);
 	}
 }

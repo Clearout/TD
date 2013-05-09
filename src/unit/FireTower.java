@@ -3,6 +3,7 @@ package unit;
 import world.World;
 
 import com.example.towerdefence.Game;
+import com.example.towerdefence.SoundRepository;
 
 public class FireTower extends Tower {
 	
@@ -39,5 +40,6 @@ public class FireTower extends Tower {
 	public void attack(Creep target) {
 		projectiles.add(new FireProjectile(game, target, projectileImage, this,
 				x, y, projectileSpeed, damage));
+		SoundRepository.fireTower.play(game.soundVolume*0.9f);
 	}
 }

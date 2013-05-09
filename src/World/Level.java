@@ -85,7 +85,7 @@ public class Level {
 			time = 1.6f;
 			waves.add(new Wave(new ArrayList<Creep>(), 1));
 			waveNumber = 0;
-			background = backgrounds[(int)(Math.random()*4)];
+			background = backgrounds[(int) (Math.random() * 4)];
 			newWave();
 		} else {
 			if (level == 1) {
@@ -98,7 +98,7 @@ public class Level {
 				time = 1f;
 				for (int i = 0; i < 20; i++) {
 					ArrayList<Creep> creeps = new ArrayList<Creep>();
-					
+
 					for (int j = 0; j < creepAmount; j++) {
 						creeps.add(new ImpCreep(game, world, map, life, reward,
 								movespeed));
@@ -109,8 +109,8 @@ public class Level {
 							creeps.add(new ZealotCreep(game, world, map, life,
 									reward, movespeed));
 					}
-					life += 2 + i/3;
-					movespeed += 3;
+					life += 1;
+					movespeed += 2;
 					time -= 0.032;
 					creepAmount++;
 					waves.add(new Wave(creeps, time));
@@ -135,7 +135,7 @@ public class Level {
 							creeps.add(new ZealotCreep(game, world, map, life,
 									reward, movespeed));
 					}
-					life+= 2 + i/3 + i/4;
+					life += 1 + (int) i / 5;
 					movespeed += 3;
 					time -= 0.032;
 					creepAmount++;
@@ -144,9 +144,9 @@ public class Level {
 
 			} else {
 				map = new Map(9, 0, 9, 13);
-				background = backgrounds[3];
+				background = backgrounds[1];
 				life = 3;
-				reward = 1;
+				reward = 3;
 				movespeed = 50;
 				creepAmount = 10;
 				time = 1f;
@@ -163,8 +163,8 @@ public class Level {
 							creeps.add(new ZealotCreep(game, world, map, life,
 									reward, movespeed));
 					}
-					life += 1 + i / 4 + i/2;
-					movespeed += 3;
+					life += 1 + (int) i / 3;
+					movespeed += 4;
 					time -= 0.032;
 					creepAmount++;
 					waves.add(new Wave(creeps, time));

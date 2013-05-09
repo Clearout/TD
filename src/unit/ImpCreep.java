@@ -37,6 +37,6 @@ public class ImpCreep extends Creep {
 	@Override
 	public void die() {
 		super.die();
-		SoundRepository.imp.play(game.soundVolume);
+		SoundRepository.imp.play(game.soundVolume*0.3f);
 	}
 }
